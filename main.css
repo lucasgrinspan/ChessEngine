@@ -1,0 +1,53 @@
+:root {
+    --main-bg-color: #5b6370;
+    --title-bar-color: #545b66;
+    --board-light-tile: #efe9de;
+    --board-dark-tile: #a58448;
+    --text-color: #FFFFFF;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont,
+    “Segoe UI”, “Roboto”, “Oxygen”,
+    “Ubuntu”, “Cantarell”, “Fira Sans”,
+    “Droid Sans”, “Helvetica Neue”, sans-serif;
+}
+#title-bar {
+    background-color: var(--title-bar-color);
+    width: 100%;
+    position: absolute;
+    top: 0;
+    display: block;
+    height: 37px;
+    -webkit-app-region: drag;
+}
+#chess-board {
+    width: 400px;
+    height: 400px;
+    min-width: 400px;
+    min-height: 400px;
+    margin: 10px;
+    margin-top: 47px;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 16px repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr) 16px;
+}
+.black-tile {
+    background-color: var(--board-dark-tile);
+}
+.white-tile {
+    background-color: var(--board-light-tile);
+}
+.notation-bar {
+    color: var(--board-light-tile);
+    text-align: center;
+    align-self: center;
+    margin-top: 4px;
+}
+#corner-piece {
+    grid-column: 1;
+    grid-row: 9;
+}
