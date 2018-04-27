@@ -5,10 +5,12 @@
 class Piece {
     public:
         Piece(std::string initPos, bool pieceColor) {position = initPos; color = pieceColor;}
-        std::string returnPosition() {return position;}
+        std::string getPosition() {return position;}
+        bool getColor() {return color;}
+        virtual bool movePiece(std::string to) = 0;
+    private:
         std::string position;
         bool color;
-        virtual bool movePiece(std::string to) = 0;
         virtual std::vector<std::string> getAreasOfInfluence() = 0;
 };
 #endif
