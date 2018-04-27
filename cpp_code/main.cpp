@@ -3,9 +3,20 @@
 #include"Board.h"
 #include"Piece.h"
 #include"Pieces/Pawn.h"
+#include"Pieces/Rook.h"
+#include"Pieces/Knight.h"
+#include"Pieces/Bishop.h"
+#include"Pieces/Queen.h"
+#include"Pieces/King.h"
 int main() {
-    Board board;
+    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+                                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                                {'f', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+    Board board(initBoard);
     board.printBoard();
-    Pawn pawn("a1", true);
-    std::cout << pawn.getPosition();
 }
