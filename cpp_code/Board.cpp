@@ -1,4 +1,5 @@
  #include<iostream>
+ #include<string>
  #include"Board.h"
  Board::Board() { }
 
@@ -9,4 +10,7 @@
          }
          std::cout << std::endl;
      }
+ }
+ bool Board::movePiece(std::string from, std::string to) {
+     return true;
  }

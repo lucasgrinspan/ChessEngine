@@ -16,5 +16,6 @@ class Board {
                                     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                     {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                     {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+        bool validateMove(std::string from, std::string to);
 };
 #endif
