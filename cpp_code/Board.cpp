@@ -48,10 +48,15 @@ Board::Board(char board[8][8]) {
         }
     }
 }
+std::vector<int> Board::stringCoordtoInt(std::string square) {
+    std::vector<int> intChords;
+    intChords.push_back(square.at(1) - '0');
+    intChords.push_back(square.at(0) - '0');
+    return intChords;
+}
 std::vector<Piece*> Board::getCurrentPieces() {
     return currentPieces;
 }
-
 void Board::printBoard() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -59,7 +64,6 @@ void Board::printBoard() {
         }
         std::cout << std::endl;
     }
-    std::cout << currentPieces[6]->getPosition();
 }
 
 bool Board::movePiece(std::string from, std::string to) {
@@ -70,5 +74,18 @@ bool Board::movePiece(std::string from, std::string to) {
             selectedPiece = piece;
         }
     }
-    return selectedPiece->movePiece(to); 
+    //TODO: find way to check if piece is blocked
+    bool result = selectedPiece->movePiece(to); 
+    if (result) {
+        selectedPiece->setPosition(to);
+        int x = stringCoordtoInt(from)[0];
+        int y = stringCoordtoInt(from)[1];
+
+        char pieceLetter = boardState[y][x];
+        boardState[y][x] = ' ';
+        int x1 = stringCoordtoInt(to)[0];
+        int y1 = stringCoordtoInt(to)[1];
+        boardState[y1][x1] = pieceLetter;
+    }
+    return result;
 }

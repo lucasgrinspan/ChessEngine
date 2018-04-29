@@ -1,19 +1,26 @@
 #include"Pawn.h"
 #include<vector>
+#include<string>
+#include<iostream>
 
 bool Pawn::movePiece(std::string to) {
-    return true;
+    std::vector<std::string> possibleSquares = getAreasOfInfluence();
+    for (std::string square : possibleSquares) {
+        if (square.compare(to) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
 std::vector<std::string> Pawn::getAreasOfInfluence() {
     std::vector<std::string> squares;
     
     //Initialize piece variables
     std::string currentPosition = getPosition();
-    bool white = getColor();
-    bool inStartingPosition = false;
-    int x = currentPosition[1];
-    int y = currentPosition[0];
-
+    bool white = !getColor();
+    int x = currentPosition.at(1) - '0';
+    int y = currentPosition.at(0) - '0';
+    
     //If white piece
     if (white) {
         //Determine if pawn is currently in starting position

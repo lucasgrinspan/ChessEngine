@@ -7,5 +7,6 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "python.linting.enabled": false
 }
