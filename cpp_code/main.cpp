@@ -19,6 +19,6 @@ int main() {
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
     Board board(initBoard);
     board.printBoard();
-    board.movePiece("00", "45");
+    board.movePiece("72", "00"); //Fishy stuff
     board.printBoard();
 }
