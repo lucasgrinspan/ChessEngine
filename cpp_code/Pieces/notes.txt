@@ -1,0 +1,8 @@
+global variables to keep track of:
+
+if white king moved
+if black king moved
+if a1 rook moved
+if a7 rook moved
+if h1 rook moved
+if h7 rook moved

@@ -9,6 +9,7 @@
 #include"Pieces/Bishop.h"
 #include"Pieces/Queen.h"
 #include"Pieces/King.h"
+#include"Pieces/Blank.h"
 
 Board::Board(char board[8][8]) {
     //Read from parameter board
@@ -44,6 +45,9 @@ Board::Board(char board[8][8]) {
                 std::string position = std::to_string(i) + std::to_string(j);
                 Piece* pawn = new Pawn(position, board[i][j] == 'P');
                 currentPieces.push_back(pawn);
+            } else if (board[i][j] == ' ') {
+                std::string position = std::to_string(i) + std::to_string(j);
+                Piece* blank = new Blank(position, true);
             }
         }
     }
@@ -65,7 +69,10 @@ void Board::printBoard() {
         std::cout << std::endl;
     }
 }
+bool Board::validateMove(Piece* piece, std::string to) {
+    bool color = piece->getColor();
 
+}
 bool Board::movePiece(std::string from, std::string to) {
     Piece* selectedPiece;
     //Iterate through the pieces and find the one being moved

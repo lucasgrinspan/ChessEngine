@@ -8,6 +8,7 @@
 #include"Pieces/Bishop.h"
 #include"Pieces/Queen.h"
 #include"Pieces/King.h"
+#include"Pieces/Blank.h"
 int main() {
     char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},

@@ -11,7 +11,7 @@ class Board {
         //For debugging
         void printBoard();
     private: 
-        //TODO: method for validating if space is occupied or blocked
+        bool validateMove(Piece* piece, std::string to);
         std::vector<Piece*> currentPieces;
         char boardState[8][8];
         std::vector<int> stringCoordtoInt(std::string square);
