@@ -51,7 +51,6 @@ std::vector<std::string> Bishop::getAreasOfInfluence() {
         min2 = startx2 + 1;
     }
     for (int i = 0; i < min2; i++) {
-        //std::cout << toStrCoord(x, y) << std::endl;
         if (((startx2 - i) != x) && ((starty2 + i) != y)) {
             squares.push_back(toStrCoord(startx2 - i, starty2 + i));
         } 

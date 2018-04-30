@@ -11,9 +11,6 @@ bool Knight::movePiece(std::string to) {
     }
     return false;
 }
-bool withinBounds(int x, int y) {
-    return (((x >= 0) && (x <= 7)) && ((y >= 0) && (y <= 7)));
-}
 std::vector<std::string> Knight::getAreasOfInfluence() {
     std::vector<std::string> squares;
     
