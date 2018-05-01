@@ -48,6 +48,7 @@ Board::Board(char board[8][8]) {
             } else if (board[i][j] == ' ') {
                 std::string position = std::to_string(i) + std::to_string(j);
                 Piece* blank = new Blank(position, true);
+                currentPieces.push_back(blank);
             }
         }
     }
@@ -71,7 +72,40 @@ void Board::printBoard() {
 }
 bool Board::validateMove(Piece* piece, std::string to) {
     bool color = piece->getColor();
+    //Draw a line between the two squares
+    //If the line only consists of empty spaces, then the move is valid.
 
+    std::string position = piece->getPosition();
+    int x0 = position.at(1) - '0';
+    int y0 = position.at(0) - '0'; 
+    int x1 = to.at(1) - '0';
+    int y1 = to.at(0) - '0';
+
+    //Get change in x and y
+    int delx = x1 - x0;
+    int dely = y1 - y0;
+
+    //If requested move is along a straight horizontal line
+    if (dely == 0) {
+        for (int i = 1; i < delx; i++) {
+            if (boardState[y0][std::min(x0, x1) + i] != ' ') {
+                return false;
+            }
+        }
+    } 
+    //If requested move is along a straight vertical line
+    else if (delx == 0) {
+        for (int i = 0; i < dely; i++) {
+            if (boardState[std::min(y0, y1)][x0] != ' ') {
+                return false;
+            }
+        }
+    }
+    //If requested move is along a diagonal
+    else if (dely == delx) {
+
+    }
+    return true;
 }
 bool Board::movePiece(std::string from, std::string to) {
     Piece* selectedPiece;
@@ -81,8 +115,14 @@ bool Board::movePiece(std::string from, std::string to) {
             selectedPiece = piece;
         }
     }
-    //TODO: find way to check if piece is blocked
+    //First test
     bool result = selectedPiece->movePiece(to); 
+    //Second test
+    if (result) {
+        result = validateMove(selectedPiece, to);
+    }
+    
+    //TODO: find way to check if piece is blocked
     if (result) {
         selectedPiece->setPosition(to);
         int x = stringCoordtoInt(from)[0];
