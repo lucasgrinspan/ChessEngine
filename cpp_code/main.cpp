@@ -20,6 +20,6 @@ int main() {
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
     Board board(initBoard);
     board.printBoard();
-    board.movePiece("00", "01");
+    board.movePiece("72", "54");
     board.printBoard();
 }

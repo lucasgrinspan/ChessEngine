@@ -47,8 +47,8 @@ Board::Board(char board[8][8]) {
                 currentPieces.push_back(pawn);
             } else if (board[i][j] == ' ') {
                 std::string position = std::to_string(i) + std::to_string(j);
-                Piece* blank = new Blank(position, true);
-                currentPieces.push_back(blank);
+                //Piece* blank = new Blank(position, true);
+                //currentPieces.push_back(blank);
             }
         }
     }
@@ -95,15 +95,35 @@ bool Board::validateMove(Piece* piece, std::string to) {
     } 
     //If requested move is along a straight vertical line
     else if (delx == 0) {
-        for (int i = 0; i < dely; i++) {
-            if (boardState[std::min(y0, y1)][x0] != ' ') {
+        for (int i = 1; i < dely; i++) {
+            if (boardState[std::min(y0, y1) + i][x0] != ' ') {
                 return false;
             }
         }
     }
     //If requested move is along a diagonal
     else if (dely == delx) {
-
+        for (int i = 1; i < delx; i++) {
+            if (boardState[std::min(y0, y1) + i][std::min(x0, x1) + i] != ' ') {
+                return false;
+            }
+        }
+    }
+    //If requested move is along the second diagonal
+    else if (delx == -dely) {
+        for (int i = 1; i < std::abs(delx); i++) {
+            if (boardState[std::max(y0, y1) - 1][std::min(x0, x1) + 1] != ' ') {
+                return false;
+            }
+        }
+    }
+    //Check if requested spot is taken by friendly piece
+    for (Piece* piece : currentPieces) {
+        if (piece->getPosition().compare(to) == 0) {
+            if (piece->getColor() == color) {
+                return false;
+            }
+        }
     }
     return true;
 }
@@ -117,6 +137,7 @@ bool Board::movePiece(std::string from, std::string to) {
     }
     //First test
     bool result = selectedPiece->movePiece(to); 
+    
     //Second test
     if (result) {
         result = validateMove(selectedPiece, to);
