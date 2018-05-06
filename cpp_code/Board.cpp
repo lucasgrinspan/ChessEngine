@@ -46,7 +46,7 @@ Board::Board(char board[8][8], bool movedPieces[6]) {
                 Piece* pawn = new Pawn(position, board[i][j] == 'P');
                 currentPieces.push_back(pawn);
             } else if (board[i][j] == ' ') {
-                std::string position = std::to_string(i) + std::to_string(j);
+                //std::string position = std::to_string(i) + std::to_string(j);
                 //Piece* blank = new Blank(position, true);
                 //currentPieces.push_back(blank);
             }

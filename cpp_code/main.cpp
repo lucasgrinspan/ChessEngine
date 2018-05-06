@@ -22,6 +22,6 @@ int main() {
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    board.movePiece("72", "54");
+    board.movePiece("04", "54");
     board.printBoard();
 }
