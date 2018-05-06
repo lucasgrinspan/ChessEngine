@@ -18,7 +18,9 @@ int main() {
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
-    Board board(initBoard);
+    //White king, black king, a1, a8, h1, h8
+    bool movedPieces[6] = {false, false, false, false, false, false};
+    Board board(initBoard, movedPieces);
     board.printBoard();
     board.movePiece("72", "54");
     board.printBoard();

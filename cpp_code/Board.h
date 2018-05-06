@@ -5,10 +5,9 @@
 #include"Piece.h"
 class Board {
     public:
-        Board(char board[8][8]);
+        Board(char board[8][8], bool movedPieces[6]);
         std::vector<Piece*> getCurrentPieces();
         bool movePiece(std::string from, std::string to);
-        //For debugging
         void printBoard();
     private: 
         bool validateMove(Piece* piece, std::string to);

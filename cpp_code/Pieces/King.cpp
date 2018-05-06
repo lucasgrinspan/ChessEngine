@@ -23,12 +23,10 @@ std::vector<std::string> King::getAreasOfInfluence() {
             if (withinBounds(x + i, y + j)) {
                 if (i != 0 || j != 0) {
                 std::cout << toStrCoord(x + i, y + j) << std::endl;
-                    squares.push_back(toStrCoord(x + i, y + j));
+                squares.push_back(toStrCoord(x + i, y + j));
                 }
             }
         }
     }
     return squares;
-    //TODO: add support for castling
-    //TODO: add support for in check??
 }

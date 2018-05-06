@@ -11,7 +11,7 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 
-Board::Board(char board[8][8]) {
+Board::Board(char board[8][8], bool movedPieces[6]) {
     //Read from parameter board
     for (int i = 0; i < 8; i++) {
          for (int j = 0; j < 8; j++) {
@@ -39,7 +39,7 @@ Board::Board(char board[8][8]) {
                 currentPieces.push_back(queen);
             } else if (board[i][j] == 'k' || board[i][j] == 'K') {
                 std::string position = std::to_string(i) + std::to_string(j);
-                Piece* king = new King(position, board[i][j] == 'K');
+                Piece* king = new King(position, board[i][j] == 'K', movedPieces);
                 currentPieces.push_back(king);
             } else if (board[i][j] == 'p' || board[i][j] == 'P') {
                 std::string position = std::to_string(i) + std::to_string(j);
