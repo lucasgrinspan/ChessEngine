@@ -17,11 +17,11 @@ int main() {
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+                                {'r', ' ', ' ', ' ', 'k', 'b', 'n', 'r'} };
     //White king, black king, a1, a8, h1, h8
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    board.movePiece("04", "54");
+    board.movePiece("74", "72");
     board.printBoard();
 }

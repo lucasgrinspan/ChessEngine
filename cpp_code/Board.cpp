@@ -71,6 +71,7 @@ void Board::printBoard() {
     }
 }
 bool Board::validateMove(Piece* piece, std::string to) {
+    //TODO: check for validity of castling 
     bool color = piece->getColor();
     //Draw a line between the two squares
     //If the line only consists of empty spaces, then the move is valid.
@@ -128,6 +129,13 @@ bool Board::validateMove(Piece* piece, std::string to) {
     return true;
 }
 bool Board::movePiece(std::string from, std::string to) {
+    int x0 = from.at(1) - '0';
+    int y0 = from.at(0) - '0';
+    int x1 = to.at(1) - '0';
+    int y1 = to.at(0) - '0';
+
+    int delx = x1 - x0;
+
     Piece* selectedPiece;
     //Iterate through the pieces and find the one being moved
     for (Piece* piece : currentPieces) {
@@ -142,17 +150,35 @@ bool Board::movePiece(std::string from, std::string to) {
     if (result) {
         result = validateMove(selectedPiece, to);
     }
-    
-    //TODO: find way to check if piece is blocked
+
+    //If castling
+    bool castling = false;
+    if (boardState[y0][x0] == 'k') {
+        if (delx == 2) {
+            //Move rook
+            //TODO: pass rook to if (result) code
+            boardState[7][5] = 'r';
+            boardState[7][7] = ' ';
+        } else if (delx == -2) {
+            boardState[7][3] = 'r';
+            boardState[7][0] = ' ';
+        }
+    } else if (boardState[y0][x0] == 'K') {
+        if (delx == -2) {
+            //Move rook
+            boardState[0][5] = 'R';
+            boardState[0][7] = ' ';
+        } else if (delx == -2) {
+            boardState[0][3] = 'R';
+            boardState[0][0] = ' ';
+        }
+    }
+
     if (result) {
         selectedPiece->setPosition(to);
-        int x = stringCoordtoInt(from)[0];
-        int y = stringCoordtoInt(from)[1];
-
-        char pieceLetter = boardState[y][x];
-        boardState[y][x] = ' ';
-        int x1 = stringCoordtoInt(to)[0];
-        int y1 = stringCoordtoInt(to)[1];
+        //Perform swap
+        char pieceLetter = boardState[y0][x0];
+        boardState[y0][x0] = ' ';
         boardState[y1][x1] = pieceLetter;
     }
     return result;
