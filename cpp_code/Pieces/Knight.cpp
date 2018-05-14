@@ -34,9 +34,5 @@ std::vector<std::string> Knight::getAreasOfInfluence() {
         squares.push_back(toStrCoord(x + 2, y + 1));
     if (withinBounds(x + 1, y + 2))
         squares.push_back(toStrCoord(x + 1, y + 2));
-    
-    for (int i = 0; i < squares.size(); i++) {
-        std::cout << squares[i] << std::endl;
-    }
     return squares;
 }

@@ -1,6 +1,7 @@
 #include"Rook.h"
 #include<vector>
 #include<string>
+#include<iostream>
 
 bool Rook::movePiece(std::string to) {
     std::vector<std::string> possibleSquares = getAreasOfInfluence();

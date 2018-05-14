@@ -71,7 +71,6 @@ void Board::printBoard() {
     }
 }
 bool Board::validateMove(Piece* piece, std::string to) {
-    //TODO: check for validity of castling 
     bool color = piece->getColor();
     //Draw a line between the two squares
     //If the line only consists of empty spaces, then the move is valid.
@@ -127,6 +126,19 @@ bool Board::validateMove(Piece* piece, std::string to) {
         }
     }
     return true;
+}
+bool Board::inCheck(std::string square, bool color) {
+    for (Piece* piece : currentPieces) {
+        //Get only one side
+        if (color == piece->getColor()) {
+            if (piece->movePiece(square)) {
+                if (validateMove(piece, square)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 bool Board::movePiece(std::string from, std::string to) {
     int x0 = from.at(1) - '0';

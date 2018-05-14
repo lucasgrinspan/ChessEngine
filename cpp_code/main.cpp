@@ -16,12 +16,13 @@ int main() {
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {' ', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'b', 'n', 'q', 'k', ' ', ' ', 'r'} };
     //White king, black king, a1, a8, h1, h8
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    board.movePiece("74", "76");
-    board.printBoard();
+    //board.movePiece("00", "30");
+    //board.printBoard();
+    std::cout << board.inCheck("40", false) << std::endl;
 }
