@@ -144,42 +144,63 @@ bool Board::movePiece(std::string from, std::string to) {
         }
     }
     //First test
+    //Make sure move is a valid piece move
     bool result = selectedPiece->movePiece(to); 
     
     //Second test
+    //Make sure the move is not blocked
     if (result) {
         result = validateMove(selectedPiece, to);
     }
 
-    //If castling
-    bool castling = false;
-    if (boardState[y0][x0] == 'k') {
-        if (delx == 2) {
-            //Move rook
-            //TODO: pass rook to if (result) code
-            boardState[7][5] = 'r';
-            boardState[7][7] = ' ';
-        } else if (delx == -2) {
-            boardState[7][3] = 'r';
-            boardState[7][0] = ' ';
+    //Third test
+    //Check if move is castling and if it is valid
+    bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
+    std::string fromRook;
+    std::string toRook;
+    Piece* rook;
+    if (castling) {
+        if (boardState[y0][x0] == 'k') {
+            if (delx == 2) {
+                //Move rook
+                fromRook = "77";
+                toRook = "75";
+            } else if (delx == -2) {
+                fromRook = "70";
+                toRook = "73";
+            }
+        } else if (boardState[y0][x0] == 'K') {
+            if (delx == -2) {
+                fromRook = "07";
+                toRook = "05";
+            } else if (delx == -2) {
+                fromRook = "00";
+                toRook = "03";
+            }   
         }
-    } else if (boardState[y0][x0] == 'K') {
-        if (delx == -2) {
-            //Move rook
-            boardState[0][5] = 'R';
-            boardState[0][7] = ' ';
-        } else if (delx == -2) {
-            boardState[0][3] = 'R';
-            boardState[0][0] = ' ';
+        for (Piece* piece : currentPieces) {
+            if (piece->getPosition().compare(fromRook) == 0) {
+                rook = piece;
+            }
         }
+        result = validateMove(rook, toRook);
     }
-
     if (result) {
+        if (castling) {
+            int x0rook = fromRook.at(1) - '0';
+            int y0rook = fromRook.at(0) - '0';
+            int x1rook = toRook.at(1) - '0';
+            int y1rook = toRook.at(0) - '0';
+            boardState[y1rook][x1rook] = boardState[y0rook][x0rook];
+            boardState[y0rook][x0rook] = ' ';
+            rook->setPosition(toRook);
+        }
         selectedPiece->setPosition(to);
         //Perform swap
         char pieceLetter = boardState[y0][x0];
         boardState[y0][x0] = ' ';
         boardState[y1][x1] = pieceLetter;
+
     }
     return result;
 }
