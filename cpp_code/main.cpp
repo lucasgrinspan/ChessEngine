@@ -10,19 +10,22 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 int main() {
-    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+    char initBoard[8][8] = {    {'R', ' ', 'B', ' ', 'K', 'B', 'N', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                                {'r', 'b', 'n', 'q', 'k', ' ', ' ', 'r'} };
+                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
     //White king, black king, a1, a8, h1, h8
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    //board.movePiece("00", "30");
-    //board.printBoard();
-    std::cout << board.inCheck("40", false) << std::endl;
+    board.movePiece("04", "02");
+    board.printBoard();
+    //TODO: change variables when king/rook moves
+    //TODO: check if king is in check after every move
+    //TODO: Board::validateMove() might fail in the horizontal and vertical check
+    //std::cout << board.inCheck("35", false) << std::endl;
 }

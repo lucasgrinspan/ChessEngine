@@ -10,6 +10,7 @@ class Board {
         bool movePiece(std::string from, std::string to);
         void printBoard();
         bool inCheck(std::string square, bool color);
+        std::vector<std::string> getPossibleMoves(bool color);
     private: 
         bool validateMove(Piece* piece, std::string to);
         std::vector<Piece*> currentPieces;

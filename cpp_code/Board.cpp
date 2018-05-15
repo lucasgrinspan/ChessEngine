@@ -87,15 +87,16 @@ bool Board::validateMove(Piece* piece, std::string to) {
 
     //If requested move is along a straight horizontal line
     if (dely == 0) {
-        for (int i = 1; i < delx; i++) {
+        for (int i = 1; i < std::abs(delx); i++) {
             if (boardState[y0][std::min(x0, x1) + i] != ' ') {
+                std::cout << std::to_string(y0) + std::to_string(std::min(x0, x1) + i) << std::endl;
                 return false;
             }
         }
-    } 
+    }
     //If requested move is along a straight vertical line
     else if (delx == 0) {
-        for (int i = 1; i < dely; i++) {
+        for (int i = 1; i < std::abs(dely); i++) {
             if (boardState[std::min(y0, y1) + i][x0] != ' ') {
                 return false;
             }
@@ -103,7 +104,7 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     //If requested move is along a diagonal
     else if (dely == delx) {
-        for (int i = 1; i < delx; i++) {
+        for (int i = 1; i <= std::abs(delx); i++) {
             if (boardState[std::min(y0, y1) + i][std::min(x0, x1) + i] != ' ') {
                 return false;
             }
@@ -111,7 +112,7 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     //If requested move is along the second diagonal
     else if (delx == -dely) {
-        for (int i = 1; i < std::abs(delx); i++) {
+        for (int i = 1; i <= std::abs(delx); i++) {
             if (boardState[std::max(y0, y1) - 1][std::min(x0, x1) + 1] != ' ') {
                 return false;
             }
@@ -121,6 +122,47 @@ bool Board::validateMove(Piece* piece, std::string to) {
     for (Piece* piece : currentPieces) {
         if (piece->getPosition().compare(to) == 0) {
             if (piece->getColor() == color) {
+                return false;
+            }
+        }
+    }
+
+    //If the move is to castle, check if it is possible
+    bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
+    if (castling) {
+        std::string fromRook;
+        std::string toRook;
+        Piece* rook;
+        if (boardState[y0][x0] == 'k') {
+            if (delx == 2) {
+                //Move rook
+                fromRook = "77";
+                toRook = "75";
+            } else if (delx == -2) {
+                fromRook = "70";
+                toRook = "73";
+            }
+        } else if (boardState[y0][x0] == 'K') {
+            if (delx == 2) {
+                fromRook = "07";
+                toRook = "05";
+            } else if (delx == -2) {
+                fromRook = "00";
+                toRook = "03";
+            }   
+        }
+        for (Piece* piece : currentPieces) {
+            if (piece->getPosition().compare(fromRook) == 0) {
+                rook = piece;
+            }
+        }
+        if (!validateMove(rook, toRook)) {
+            return false;
+        }
+
+        //King is not allowed to castle across check
+        for (int i = 0; i < 3; i++) {
+            if (inCheck(std::to_string(y0) + std::to_string(std::min(x0, x1) + i), !color)) {
                 return false;
             }
         }
@@ -158,15 +200,14 @@ bool Board::movePiece(std::string from, std::string to) {
     //First test
     //Make sure move is a valid piece move
     bool result = selectedPiece->movePiece(to); 
-    
+
     //Second test
     //Make sure the move is not blocked
     if (result) {
         result = validateMove(selectedPiece, to);
     }
 
-    //Third test
-    //Check if move is castling and if it is valid
+    //Setup variables in case of castling
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
     std::string fromRook;
     std::string toRook;
@@ -182,7 +223,7 @@ bool Board::movePiece(std::string from, std::string to) {
                 toRook = "73";
             }
         } else if (boardState[y0][x0] == 'K') {
-            if (delx == -2) {
+            if (delx == 2) {
                 fromRook = "07";
                 toRook = "05";
             } else if (delx == -2) {
@@ -195,7 +236,6 @@ bool Board::movePiece(std::string from, std::string to) {
                 rook = piece;
             }
         }
-        result = validateMove(rook, toRook);
     }
     if (result) {
         if (castling) {
@@ -203,6 +243,7 @@ bool Board::movePiece(std::string from, std::string to) {
             int y0rook = fromRook.at(0) - '0';
             int x1rook = toRook.at(1) - '0';
             int y1rook = toRook.at(0) - '0';
+
             boardState[y1rook][x1rook] = boardState[y0rook][x0rook];
             boardState[y0rook][x0rook] = ' ';
             rook->setPosition(toRook);
@@ -215,4 +256,8 @@ bool Board::movePiece(std::string from, std::string to) {
 
     }
     return result;
+}
+std::vector<std::string> Board::getPossibleMoves(bool color) {
+    std::vector<std::string> possibleMoves;
+    return possibleMoves;
 }

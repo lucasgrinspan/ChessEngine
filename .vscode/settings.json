@@ -7,7 +7,9 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "typeinfo": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "__locale": "cpp",
+        "algorithm": "cpp"
     },
     "python.linting.enabled": false
 }
