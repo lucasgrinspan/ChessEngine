@@ -14,7 +14,7 @@ int main() {
                                 {'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', 'R', ' ', ' ', 'b'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
@@ -22,11 +22,16 @@ int main() {
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    board.movePiece("10", "21");
+    board.movePiece("04", "02");
+    board.printBoard();
+    board.movePiece("44", "47");
+    board.printBoard();
+    board.movePiece("04", "02");
     board.printBoard();
     //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
     //TODO: delete piece when eaten
     //TODO: en passant
-    //std::cout << board.inCheck("03", false) << std::endl;
+    //TODO: pawn reaching end of rank
+    //std::cout << board.inCheck("20", false) << std::endl;
 }

@@ -162,9 +162,18 @@ bool Board::validateMove(Piece* piece, std::string to) {
 
         //King is not allowed to castle across check
         for (int i = 0; i < 3; i++) {
+            //Create new pieces with those positions
+            //This is done because pawns can threaten a square while not being able to move there
+            //The new placeholder pieces trick the pawn into thinking there is a piece there
+            //this allows inCheck() to return the correct value
+            Piece* placeHolder = new Blank(std::to_string(y0) + std::to_string(std::min(x0, x1) + i), color);
+            currentPieces.push_back(placeHolder);
+            std::cout << std::to_string(y0) + std::to_string(std::min(x0, x1) + i) << std::endl;
             if (inCheck(std::to_string(y0) + std::to_string(std::min(x0, x1) + i), !color)) {
                 return false;
             }
+            currentPieces.pop_back();
+            delete placeHolder;
         }
     }
     //If the move is to move the pawn diagonally, check if possible
@@ -264,11 +273,23 @@ bool Board::movePiece(std::string from, std::string to) {
             rook->setPosition(toRook);
         }
         selectedPiece->setPosition(to);
+        
+        //Detect if a piece is being taken
+        char previousPiece = boardState[y1][x1];
+        if (previousPiece != ' ') {
+            for (int i = 0; i < currentPieces.size(); i++) {
+                if (currentPieces[i]->getPosition().compare(to) == 0) {
+                    //Current piece not deleting
+                    delete currentPieces[i];
+                    currentPieces.erase(currentPieces.begin() + i + 1);
+                }
+            }
+        }
+
         //Perform swap
         char pieceLetter = boardState[y0][x0];
         boardState[y0][x0] = ' ';
         boardState[y1][x1] = pieceLetter;
-
     }
     return result;
 }

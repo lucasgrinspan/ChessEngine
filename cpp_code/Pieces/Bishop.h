@@ -5,6 +5,7 @@ class Bishop : public Piece {
     public:
         Bishop(std::string initPos, bool pieceColor) : Piece(initPos, pieceColor){
         };
+        ~Bishop() {};
         bool movePiece(std::string to);
     private:
         std::vector<std::string> getAreasOfInfluence();

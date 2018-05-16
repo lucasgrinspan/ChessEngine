@@ -8,6 +8,7 @@ class King : public Piece {
                 movedPiecesBool[i] = movedPieces[i];
             }
         };
+        ~King() {};
         bool movePiece(std::string to);
     private:
         std::vector<std::string> getAreasOfInfluence();

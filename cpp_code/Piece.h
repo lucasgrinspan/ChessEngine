@@ -5,6 +5,7 @@
 class Piece {
     public:
         Piece(std::string initPos, bool pieceColor) {position = initPos; color = pieceColor;}
+        virtual ~Piece() {};
         std::string getPosition() {return position;}
         void setPosition(std::string to) {position = to;}
         bool getColor() {return color;}
