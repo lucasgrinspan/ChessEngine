@@ -104,7 +104,7 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     //If requested move is along a diagonal
     else if (dely == delx) {
-        for (int i = 1; i <= std::abs(delx); i++) {
+        for (int i = 1; i < std::abs(delx); i++) {
             if (boardState[std::min(y0, y1) + i][std::min(x0, x1) + i] != ' ') {
                 return false;
             }
@@ -112,7 +112,7 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     //If requested move is along the second diagonal
     else if (delx == -dely) {
-        for (int i = 1; i <= std::abs(delx); i++) {
+        for (int i = 1; i < std::abs(delx); i++) {
             if (boardState[std::max(y0, y1) - 1][std::min(x0, x1) + 1] != ' ') {
                 return false;
             }
@@ -167,6 +167,21 @@ bool Board::validateMove(Piece* piece, std::string to) {
             }
         }
     }
+    //If the move is to move the pawn diagonally, check if possible
+    bool diagonalPawn = (std::tolower(boardState[y0][x0]) == 'p') && (y0 != y1);
+    if (diagonalPawn) {
+        //This would be simplified with Python's for ... else loop
+        for (Piece* targetPiece : currentPieces) {
+            if (color != targetPiece->getColor()) {
+                if (targetPiece->getPosition().compare(to) == 0) {
+                    //If piece is found, jump to end. If not, return false
+                    goto skip;
+                }
+            }
+        }
+        return false;
+    }
+    skip:
     return true;
 }
 bool Board::inCheck(std::string square, bool color) {

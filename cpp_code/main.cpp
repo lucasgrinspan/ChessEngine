@@ -10,8 +10,8 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 int main() {
-    char initBoard[8][8] = {    {'R', ' ', 'B', ' ', 'K', 'B', 'N', 'R'}, 
-                                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+    char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', 'N', 'R'}, 
+                                {'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
@@ -22,10 +22,11 @@ int main() {
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
     board.printBoard();
-    board.movePiece("04", "02");
+    board.movePiece("10", "21");
     board.printBoard();
     //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
-    //TODO: Board::validateMove() might fail in the horizontal and vertical check
-    //std::cout << board.inCheck("35", false) << std::endl;
+    //TODO: delete piece when eaten
+    //TODO: en passant
+    //std::cout << board.inCheck("03", false) << std::endl;
 }

@@ -9,7 +9,11 @@
         "typeinfo": "cpp",
         "string": "cpp",
         "__locale": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "__bit_reference": "cpp",
+        "ios": "cpp",
+        "memory": "cpp",
+        "type_traits": "cpp"
     },
     "python.linting.enabled": false
 }
