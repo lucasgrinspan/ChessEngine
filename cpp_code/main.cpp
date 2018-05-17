@@ -21,11 +21,6 @@ int main() {
     //White king, black king, a1, a8, h1, h8
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces);
-    board.printBoard();
-    board.movePiece("04", "02");
-    board.printBoard();
-    board.movePiece("34", "36");
-    board.printBoard();
     board.movePiece("04", "02");
     board.printBoard();
     //TODO: change variables when king/rook moves
