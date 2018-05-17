@@ -13,8 +13,8 @@ int main() {
     char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', 'N', 'R'}, 
                                 {'P', 'P', 'P', 'P', ' ', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', 'R', ' ', ' ', 'b'},
+                                {' ', ' ', ' ', ' ', 'R', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', 'b'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
@@ -24,13 +24,12 @@ int main() {
     board.printBoard();
     board.movePiece("04", "02");
     board.printBoard();
-    board.movePiece("44", "47");
+    board.movePiece("34", "36");
     board.printBoard();
     board.movePiece("04", "02");
     board.printBoard();
     //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
-    //TODO: delete piece when eaten
     //TODO: en passant
     //TODO: pawn reaching end of rank
     //std::cout << board.inCheck("20", false) << std::endl;

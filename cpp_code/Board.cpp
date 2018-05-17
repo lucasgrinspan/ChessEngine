@@ -89,7 +89,6 @@ bool Board::validateMove(Piece* piece, std::string to) {
     if (dely == 0) {
         for (int i = 1; i < std::abs(delx); i++) {
             if (boardState[y0][std::min(x0, x1) + i] != ' ') {
-                std::cout << std::to_string(y0) + std::to_string(std::min(x0, x1) + i) << std::endl;
                 return false;
             }
         }
@@ -168,8 +167,9 @@ bool Board::validateMove(Piece* piece, std::string to) {
             //this allows inCheck() to return the correct value
             Piece* placeHolder = new Blank(std::to_string(y0) + std::to_string(std::min(x0, x1) + i), color);
             currentPieces.push_back(placeHolder);
-            std::cout << std::to_string(y0) + std::to_string(std::min(x0, x1) + i) << std::endl;
             if (inCheck(std::to_string(y0) + std::to_string(std::min(x0, x1) + i), !color)) {
+                currentPieces.pop_back();
+                delete placeHolder;
                 return false;
             }
             currentPieces.pop_back();
@@ -204,6 +204,7 @@ bool Board::inCheck(std::string square, bool color) {
             }
         }
     }
+
     return false;
 }
 bool Board::movePiece(std::string from, std::string to) {
@@ -221,22 +222,24 @@ bool Board::movePiece(std::string from, std::string to) {
             selectedPiece = piece;
         }
     }
+    std::cout << "found piece" << std::endl;
     //First test
     //Make sure move is a valid piece move
     bool result = selectedPiece->movePiece(to); 
-
+    std::cout << "first test: " << result << std::endl;
     //Second test
     //Make sure the move is not blocked
     if (result) {
         result = validateMove(selectedPiece, to);
     }
-
+    std::cout << "second test: " << result << std::endl;
     //Setup variables in case of castling
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
     std::string fromRook;
     std::string toRook;
     Piece* rook;
     if (castling) {
+        std::cout << "castling detected" << std::endl;
         if (boardState[y0][x0] == 'k') {
             if (delx == 2) {
                 //Move rook
@@ -258,6 +261,7 @@ bool Board::movePiece(std::string from, std::string to) {
         for (Piece* piece : currentPieces) {
             if (piece->getPosition().compare(fromRook) == 0) {
                 rook = piece;
+                std::cout << "rook found" << std::endl;
             }
         }
     }
