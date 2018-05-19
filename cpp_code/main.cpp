@@ -10,22 +10,24 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 int main() {
-    char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', 'N', 'R'}, 
+    char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', ' ', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', ' ', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', 'P', 'p'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', ' '},
-                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {'p', 'p', 'p', 'p', 'p', 'p', 'P', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', 'b', ' ', 'r'} };
     //White king, black king, a1, a8, h1, h8
     std::vector<std::string> moves {"----", "6747"};
     bool movedPieces[6] = {false, false, false, false, false, false};
     Board board(initBoard, movedPieces, moves);
     //board.printMoves();
     //board.movePiece("26", "36");
-    board.movePiece("46", "57");
     board.printBoard();
+    board.movePiece("66", "77N");
+
+    board.printMoves();
 
 
     /* DOCUMENTATION
@@ -41,8 +43,4 @@ int main() {
 
     //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
-    //TODO: en passant
-    //TODO: make move table
-    //TODO: add moves to move table
-    //TODO: pawn reaching end of rank
 }

@@ -21,6 +21,10 @@ std::vector<std::string> Pawn::getAreasOfInfluence() {
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
     
+    //Possible pieces the pawn can promote to
+    char promotionPieces[4] = {'q', 'b', 'n', 'r'};
+    char promotionPiecesBlack[4] = {'Q', 'B', 'N', 'R'};
+
     //If white piece
     if (white) {
         //Determine if pawn is currently in starting position
@@ -42,6 +46,26 @@ std::vector<std::string> Pawn::getAreasOfInfluence() {
         } else {
             squares.push_back(toStrCoord(x + 1, y - 1));
             squares.push_back(toStrCoord(x - 1, y - 1));
+        }
+
+        //If next move leads to a pawn promotion
+        if (squares[0].at(0) - '0' == 0) {
+            std::vector<std::string> promotionMoves;
+            //Has to be directly set because the size will change
+            int limit = squares.size();
+            for (int i = 0; i < limit; i++) {
+                //Duplicate each square 4 times for each square in squares
+                //This is done because there are 4 possible promotions
+                for (int j = 0; j < 4; j++) {
+                    promotionMoves.push_back(squares[i]);
+                }
+            }
+            squares.clear();
+            for (int i = 0; i < promotionMoves.size(); i++) {
+                //Adds the promotion piece to the move (06q, 06b, etc.)
+                promotionMoves[i] += promotionPieces[i % 4];    
+                squares.push_back(promotionMoves[i]);
+            }
         }
     } 
     //If black piece
@@ -65,6 +89,21 @@ std::vector<std::string> Pawn::getAreasOfInfluence() {
         } else {
             squares.push_back(toStrCoord(x + 1, y + 1));
             squares.push_back(toStrCoord(x - 1, y + 1));
+        }
+        //Copy of pawn promotion but for black pieces
+        if (squares[0].at(0) - '0' == 7) {
+            std::vector<std::string> promotionMoves;
+            int limit = squares.size();
+            for (int i = 0; i < limit; i++) {
+                for (int j = 0; j < 4; j++) {
+                    promotionMoves.push_back(squares[i]);
+                }
+            }
+            squares.clear();
+            for (int i = 0; i < promotionMoves.size(); i++) {
+                promotionMoves[i] += promotionPiecesBlack[i % 4];    
+                squares.push_back(promotionMoves[i]);
+            }
         }
     }
     return squares;

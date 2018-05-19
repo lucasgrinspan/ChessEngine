@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include<stdexcept>
 #include"Board.h"
 #include"Piece.h"
 #include"Pieces/Pawn.h"
@@ -76,9 +77,11 @@ void Board::printBoard() {
     }
 }
 void Board::printMoves() {
+    std::cout << std::endl;
     for (int i = 0; i < moveList.size(); i++) {
         std::cout << std::to_string(i + 1) + ": " + moveList[i].substr(0, 2) + " " + moveList[i].substr(2, 2) << std::endl;
     }
+    std::cout << std::endl;
 }
 bool Board::validateMove(Piece* piece, std::string to) {
     bool color = piece->getColor();
@@ -191,7 +194,7 @@ bool Board::validateMove(Piece* piece, std::string to) {
         //This would be simplified with Python's for ... else loop
         for (Piece* targetPiece : currentPieces) {
             if (color != targetPiece->getColor()) {
-                if (targetPiece->getPosition().compare(to) == 0) {
+                if (targetPiece->getPosition().compare(to.substr(0, 2)) == 0) {
                     //If piece is found, jump to end. If not, return false
                     goto skip;
                 }
@@ -266,17 +269,23 @@ bool Board::movePiece(std::string from, std::string to) {
             selectedPiece = piece;
         }
     }
-    std::cout << "found piece" << std::endl;
+    std::cout << "Found piece" << std::endl;
+    
     //First test
     //Make sure move is a valid piece move
     bool result = selectedPiece->movePiece(to); 
-    std::cout << "first test: " << result << std::endl;
+    std::cout << "First test: " << result << std::endl;
+    
     //Second test
     //Make sure the move is not blocked
     if (result) {
         result = validateMove(selectedPiece, to);
     }
-    std::cout << "second test: " << result << std::endl;
+    std::cout << "Second test: " << result << std::endl;
+    
+    //Third test
+    //Make sure king is not in check
+
     
     //Setup variables in case of castling
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
@@ -306,7 +315,7 @@ bool Board::movePiece(std::string from, std::string to) {
         for (Piece* piece : currentPieces) {
             if (piece->getPosition().compare(fromRook) == 0) {
                 rook = piece;
-                std::cout << "rook found" << std::endl;
+                std::cout << "Rook found" << std::endl;
             }
         }
     }
@@ -327,18 +336,19 @@ bool Board::movePiece(std::string from, std::string to) {
             boardState[y0rook][x0rook] = ' ';
             rook->setPosition(toRook);
         }
-        selectedPiece->setPosition(to);
-        
+
         //Detect if a piece is being taken
         char previousPiece = boardState[y1][x1];
         if (previousPiece != ' ') {
             for (int i = 0; i < currentPieces.size(); i++) {
-                if (currentPieces[i]->getPosition().compare(to) == 0) {
+                if (currentPieces[i]->getPosition().compare(to.substr(0, 2)) == 0) {
                     delete currentPieces[i];
-                    currentPieces.erase(currentPieces.begin() + i + 1);
+                    currentPieces.erase(currentPieces.begin() + i);
                 }
             }
         }
+
+        selectedPiece->setPosition(to.substr(0, 2));
 
         //Delete taken piece due to enpassant
         if (enPassant) {
@@ -358,15 +368,63 @@ bool Board::movePiece(std::string from, std::string to) {
             boardState[enPassantTarget.at(0) - '0'][enPassantTarget.at(1) - '0'] = ' ';
         }
 
+        
+
         //Perform swap
         char pieceLetter = boardState[y0][x0];
         boardState[y0][x0] = ' ';
         boardState[y1][x1] = pieceLetter;
+        //Check if the move is a pawn promotion
+        bool pawnPromotion =    (std::tolower(boardState[x1][y1]) == 'p') &&
+                                (y1 == 7 || y1 == 0);
 
+        if (pawnPromotion) {
+            //Get the promotion piece
+            boardState[y1][x1] = to.at(2);
+            std::cout << "Pawn promotion detected" << std::endl;
+
+            //Delete promoted pawn
+            for (int i = 0; i < currentPieces.size(); i++) {
+                if (currentPieces[i]->getPosition().compare(to) == 0) {
+                    delete currentPieces[i];
+                    currentPieces.erase(currentPieces.begin() + i + 1);
+                }
+            }
+
+            //Create new piece and push it to the piece list
+            char promotedPiece = to.at(2);
+            std::string newSquare = to.substr(0, 2);
+            switch (std::tolower(promotedPiece)) {
+                case 'q': {
+                    Piece* promotedQueen = new Queen(newSquare, selectedPiece->getColor());
+                    currentPieces.push_back(promotedQueen);
+                    break;
+                }
+                case 'b': {
+                    Piece* promotedBishop = new Bishop(newSquare, selectedPiece->getColor());
+                    currentPieces.push_back(promotedBishop);
+                    break;
+                }
+                case 'r': {
+                    Piece* promotedRook = new Rook(newSquare, selectedPiece->getColor());
+                    currentPieces.push_back(promotedRook);
+                    break;
+                }
+                case 'n': {
+                    Piece* promotedKnight = new Knight(newSquare, selectedPiece->getColor());
+                    currentPieces.push_back(promotedKnight);
+                    break;
+                }
+                default: {
+                    throw std::invalid_argument("Invalid promotion piece");
+                }
+            }
+        }
         //Add move to the move list
         if (!castling) {
             moveList.push_back(from + to);
         } else {
+            //Castling notation
             moveList.push_back("OOOO");
         }
     }
