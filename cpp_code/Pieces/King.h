@@ -10,8 +10,9 @@ class King : public Piece {
         };
         ~King() {};
         bool movePiece(std::string to);
+        void setMovedPiecesBool(bool movedPieces[6]);
     private:
-        std::vector<std::string> getAreasOfInfluence();
         bool movedPiecesBool[6];
+        std::vector<std::string> getAreasOfInfluence();
 };
 #endif

@@ -79,7 +79,7 @@ void Board::printBoard() {
 void Board::printMoves() {
     std::cout << std::endl;
     for (int i = 0; i < moveList.size(); i++) {
-        std::cout << std::to_string(i + 1) + ": " + moveList[i].substr(0, 2) + " " + moveList[i].substr(2, 2) << std::endl;
+        std::cout << std::to_string(i + 1) + ": " + moveList[i].substr(0, 2) + " " + moveList[i].substr(2) << std::endl;
     }
     std::cout << std::endl;
 }
@@ -283,10 +283,6 @@ bool Board::movePiece(std::string from, std::string to) {
     }
     std::cout << "Second test: " << result << std::endl;
     
-    //Third test
-    //Make sure king is not in check
-
-    
     //Setup variables in case of castling
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
     std::string fromRook;
@@ -331,7 +327,6 @@ bool Board::movePiece(std::string from, std::string to) {
             int y0rook = fromRook.at(0) - '0';
             int x1rook = toRook.at(1) - '0';
             int y1rook = toRook.at(0) - '0';
-
             boardState[y1rook][x1rook] = boardState[y0rook][x0rook];
             boardState[y0rook][x0rook] = ' ';
             rook->setPosition(toRook);
@@ -349,7 +344,7 @@ bool Board::movePiece(std::string from, std::string to) {
         }
 
         selectedPiece->setPosition(to.substr(0, 2));
-
+        
         //Delete taken piece due to enpassant
         if (enPassant) {
             std::cout << "En Passant detected" << std::endl;
@@ -368,14 +363,13 @@ bool Board::movePiece(std::string from, std::string to) {
             boardState[enPassantTarget.at(0) - '0'][enPassantTarget.at(1) - '0'] = ' ';
         }
 
-        
-
         //Perform swap
         char pieceLetter = boardState[y0][x0];
         boardState[y0][x0] = ' ';
         boardState[y1][x1] = pieceLetter;
+
         //Check if the move is a pawn promotion
-        bool pawnPromotion =    (std::tolower(boardState[x1][y1]) == 'p') &&
+        bool pawnPromotion =    (std::tolower(boardState[y1][x1]) == 'p') &&
                                 (y1 == 7 || y1 == 0);
 
         if (pawnPromotion) {
@@ -421,14 +415,19 @@ bool Board::movePiece(std::string from, std::string to) {
             }
         }
         //Add move to the move list
-        if (!castling) {
-            moveList.push_back(from + to);
-        } else {
-            //Castling notation
-            moveList.push_back("OOOO");
-        }
+        moveList.push_back(from + to);
+        
     }
     return result;
+    // std::string kingSquare;
+    //     for (int i = 0; i < 8; i++) {
+    //         for (int j = 0; j < 8; j++) {
+    //             if (boardState[i][j] == selectedPiece->getColor() ? 'K' : 'k') {
+    //                 kingSquare = std::to_string(i) + std::to_string(j);
+    //             }
+    //         }
+    //     }
+    //     result = !inCheck(kingSquare, !selectedPiece->getColor());
 }
 std::vector<std::string> Board::getPossibleMoves(bool color) {
     std::vector<std::string> possibleMoves;

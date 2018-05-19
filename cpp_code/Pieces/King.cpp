@@ -2,6 +2,11 @@
 #include<vector>
 #include<iostream>
 
+void setMovedPiecesBool(bool movedPieces[6]) {
+    for (int i = 0; i < 6; i++) {
+        movedPiecesBool[i] = movedPieces[i];
+    }
+}
 bool King::movePiece(std::string to) {
     std::vector<std::string> possibleSquares = getAreasOfInfluence();
     for (std::string square : possibleSquares) {

@@ -25,10 +25,9 @@ int main() {
     //board.printMoves();
     //board.movePiece("26", "36");
     board.printBoard();
-    board.movePiece("66", "77N");
+    board.movePiece("04", "02");
 
     board.printMoves();
-
 
     /* DOCUMENTATION
     Board coordinates are given by a string where the first character is the y coord,
@@ -39,7 +38,6 @@ int main() {
     the piece, and an integer in case that a pawn promotion occurs.
     It returns the result of the action as a bool.
     */
-
 
     //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
