@@ -17,9 +17,10 @@ class Board {
     private: 
         bool validateMove(Piece* piece, std::string to);
         bool inCheck(std::string square, bool color);
+        bool getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std::string from, std::string to);
         int getKingStatus(bool color);
         std::vector<int> stringCoordtoInt(std::string square);
-        std::vector<std::square> getPiecesAttackingKing(color);
+        std::vector<std::string> getPiecesAttackingKing(bool color);
         
         Piece* whiteKing;
         Piece* blackKing;

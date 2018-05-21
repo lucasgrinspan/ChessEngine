@@ -291,16 +291,47 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     skip:
 
-    //  Check if king is currently in check and by how many times
-    int checkCount = getKingStatus(color);
+    return true;
+}
+bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std::string from, std::string to) {
+    //  Convert string coordinates to int coordinates
+    int x0 = from.at(1) - '0';
+    int y0 = from.at(0) - '0';
+    int x1 = to.at(1) - '0';
+    int y1 = to.at(0) - '0';
+    //  Get the coordinates of the king piece
+    Piece* kingPiece = color ? blackKing : whiteKing;
+    std::string kingPosString = kingPiece->getPosition();
+    int kingX = kingPiece->getPosition().at(1) - '0';
+    int kingY = kingPiece->getPosition().at(0) - '0';
     //  Get the coordinates of the pieces attacking the king
     std::vector<std::string> attackingPieces;
-    if (checkCount < 0) {
+    if (checkCount > 0) {
         attackingPieces = getPiecesAttackingKing(!color);
     }
-    //  If not in check, king can not be placed into check
+    //  If not in check, king can not be placed into check, or a pinned piece can not be moved
     if (checkCount == 0) {
-        //check king move and pin
+        //  Check if king is moving to invalid square
+        if (std::tolower(boardState[y0][x0]) == 'k') {
+            if (inCheck(std::to_string(y1) + std::to_string(x1), !color)) {
+                return false;
+            }
+        } 
+        //  Check if the piece being moved is currently pinned
+        else {
+            //  Move the piece and check if the king is in check
+            char previousPiece = boardState[y1][x1];
+            char movedPiece = boardState[y0][x0];
+            boardState[y1][x1] = movedPiece;
+            boardState[y0][x0] = ' ';
+            if (inCheck(kingPosString, !color)) {
+                boardState[y0][x0] = movedPiece;
+                boardState[y1][x1] = previousPiece;
+                return false;
+            }
+            boardState[y1][x1] = previousPiece;
+            boardState[y0][x0] = movedPiece;
+        }
     }
     //  If king is in check once, then the king must move or the check must be blocked
     else if (checkCount == 1) {
@@ -314,17 +345,22 @@ bool Board::validateMove(Piece* piece, std::string to) {
     }
     //  If king is in check twice, then the king must move
     else if (checkCount == 2) {
-
+        if (std::tolower(boardState[y0][x0] != 'k')) {
+            return false
+        } else {
+            if (inCheck(std::to_string(y1) + std::to_string(x1), !color)) {
+                return false;
+            }
+        }
     }
     //  Else, an error happened
     else {
         std::cout << "Invalid state: The king can not be in check more than twice" << std::endl;
         return false;
     }
-
     return true;
 }
-std::vector<std::string> getPiecesAttackingKing(bool color) {
+std::vector<std::string> Board::getPiecesAttackingKing(bool color) {
     std::vector<std::string> attackingPieces;
     //here
     return attackingPieces;
@@ -386,6 +422,16 @@ bool Board::movePiece(std::string from, std::string to) {
         result = validateMove(selectedPiece, to);
     }
     std::cout << "Second test: " << result << std::endl;
+
+    //  Third test
+    //  Make sure king is not in check now
+    if (result) {
+        //  Check if king is currently in check and by how many times
+        bool color = selectedPiece->getColor();
+        int checkCount = getKingStatus(color);
+        result = getMoveInCheck(checkCount, color, selectedPiece, from, to);
+    }
+    std::cout << "Third test: " << result << std::endl;
 
     //  Setup variables in case of castling
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
