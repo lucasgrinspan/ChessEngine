@@ -304,11 +304,11 @@ bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std
     std::string kingPosString = kingPiece->getPosition();
     int kingX = kingPiece->getPosition().at(1) - '0';
     int kingY = kingPiece->getPosition().at(0) - '0';
-    //  Get the coordinates of the pieces attacking the king
-    std::vector<std::string> attackingPieces;
-    if (checkCount > 0) {
-        attackingPieces = getPiecesAttackingKing(!color);
-    }
+    //  In case that the move is en passant
+    bool enPassant =    (std::tolower(boardState[y0][x0]) == 'p') &&
+                        (x0 != x1) &&
+                        (boardState[y1][x1] == ' ');
+
     //  If not in check, king can not be placed into check, or a pinned piece can not be moved
     if (checkCount == 0) {
         //  Check if king is moving to invalid square
@@ -341,12 +341,59 @@ bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std
                 return false;
             }
         }
-        //check en passant, piece take, pin, and block
+        //  Check the case of en passant
+        else if (enPassant) {
+            std::string enPassantTarget = std::to_string(y0) + std::to_string(x1);
+            Piece* targetPiece;
+            for (Piece* piece : currentPieces) {
+                if (piece->getPosition().compare(enPassantTarget) == 0) {
+                    targetPiece = piece;
+                    //  Placeholder
+                    targetPiece->setPosition("--");
+                }
+            }
+            if (inCheck(kingPosString, !color)) {
+                targetPiece->setPosition(to);
+                return false;
+            }
+            targetPiece->setPosition(to);
+        }
+        //  Check the case of pin, block, or piece take
+        else {
+            //  Move the piece and check if the king is in check
+            char previousPiece = boardState[y1][x1];
+            char movedPiece = boardState[y0][x0];
+            boardState[y1][x1] = movedPiece;
+            boardState[y0][x0] = ' ';
+            Piece* takenPiece;
+            if (previousPiece != ' ') {
+                for (Piece* piece : currentPieces) {
+                    if (piece->getPosition().compare(to.substr(0, 2)) == 0) {
+                        takenPiece = piece;
+                        //  Placeholder
+                        takenPiece->setPosition("--");
+                    }
+                }
+            }
+            if (inCheck(kingPosString, !color)) {
+                boardState[y0][x0] = movedPiece;
+                boardState[y1][x1] = previousPiece;
+                if (previousPiece != ' ') {
+                    takenPiece->setPosition(to.substr(0, 2));
+                }
+                return false;
+            }
+            boardState[y1][x1] = previousPiece;
+            boardState[y0][x0] = movedPiece;
+            if (previousPiece != ' ') {
+                takenPiece->setPosition(to.substr(0, 2));
+            }
+        }
     }
     //  If king is in check twice, then the king must move
     else if (checkCount == 2) {
         if (std::tolower(boardState[y0][x0] != 'k')) {
-            return false
+            return false;
         } else {
             if (inCheck(std::to_string(y1) + std::to_string(x1), !color)) {
                 return false;
@@ -359,11 +406,6 @@ bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std
         return false;
     }
     return true;
-}
-std::vector<std::string> Board::getPiecesAttackingKing(bool color) {
-    std::vector<std::string> attackingPieces;
-    //here
-    return attackingPieces;
 }
 bool Board::inCheck(std::string square, bool color) {
     for (Piece* piece : currentPieces) {

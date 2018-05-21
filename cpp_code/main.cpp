@@ -12,18 +12,18 @@
 int main() {
     char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', ' ', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                                {' ', ' ', ' ', ' ', 'Q', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'q', ' ', ' ', 'p'},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', ' ', ' ', 'r'} };
 
     std::vector<std::string> moves {"----", "1111"};
     Board board(initBoard, moves); 
     // board.movePiece("01", "00");
     // board.printBoard();
-    board.movePiece("64", "54");
+    board.movePiece("15", "35");
     board.printBoard();
     
     board.printMoves();

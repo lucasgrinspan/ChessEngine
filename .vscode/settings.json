@@ -17,5 +17,6 @@
         "vector": "cpp",
         "__split_buffer": "cpp"
     },
+    "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false
 }

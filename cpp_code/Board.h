@@ -20,7 +20,6 @@ class Board {
         bool getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std::string from, std::string to);
         int getKingStatus(bool color);
         std::vector<int> stringCoordtoInt(std::string square);
-        std::vector<std::string> getPiecesAttackingKing(bool color);
         
         Piece* whiteKing;
         Piece* blackKing;
