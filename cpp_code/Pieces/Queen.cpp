@@ -18,10 +18,10 @@ std::vector<std::string> Queen::getAreasOfInfluence() {
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
     
-    //Bishop implementation
+    //  Bishop implementation
 
-    //Calculate top left to bottom right diagonal
-    //Get coords to top left square of path
+    //  Calculate top left to bottom right diagonal
+    //  Get coords to top left square of path
     int startx1 = x - std::min(x, y);
     int starty1 = y - std::min(x, y);
 
@@ -38,8 +38,8 @@ std::vector<std::string> Queen::getAreasOfInfluence() {
             squares.push_back(toStrCoord(startx1 + i, starty1 + i));
         } 
     }
-    //Calculate top right to bottom left diagonal
-    //Get coords of top right
+    //  Calculate top right to bottom left diagonal
+    //  Get coords of top right
     int startx2 = x + std::min(7 - x, y);
     int starty2 = y - std::min(7 - x, y);
 
@@ -52,21 +52,21 @@ std::vector<std::string> Queen::getAreasOfInfluence() {
         min2 = startx2 + 1;
     }
     for (int i = 0; i < min2; i++) {
-        //std::cout << toStrCoord(x, y) << std::endl;
+        //  std::cout << toStrCoord(x, y) << std::endl;
         if (((startx2 - i) != x) && ((starty2 + i) != y)) {
             squares.push_back(toStrCoord(startx2 - i, starty2 + i));
         } 
     }
 
-    //Rook implementation
+    //  Rook implementation
 
-    //Add squares over and under
+    //  Add squares over and under
     for (int i = 0; i < 8; i++) {
         if (i != x) {
             squares.push_back(toStrCoord(i, y));
         }
     }
-    //Add squares to the left and right
+    //  Add squares to the left and right
     for (int i = 0; i < 8; i++) {
         if (i != y) {
             squares.push_back(toStrCoord(x, i));

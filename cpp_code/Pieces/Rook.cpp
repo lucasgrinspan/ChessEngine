@@ -20,18 +20,17 @@ std::vector<std::string> Rook::getAreasOfInfluence() {
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
 
-    //Add squares over and under
+    //  Add squares over and under
     for (int i = 0; i < 8; i++) {
         if (i != x) {
             squares.push_back(toStrCoord(i, y));
         }
     }
-    //Add squares to the left and right
+    //  Add squares to the left and right
     for (int i = 0; i < 8; i++) {
         if (i != y) {
             squares.push_back(toStrCoord(x, i));
         }
     }
-    //TODO: add support for castling
     return squares;
 }

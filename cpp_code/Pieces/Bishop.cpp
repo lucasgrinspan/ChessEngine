@@ -19,8 +19,8 @@ std::vector<std::string> Bishop::getAreasOfInfluence() {
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
     
-    //Calculate top left to bottom right diagonal
-    //Get coords to top left square of path
+    //  Calculate top left to bottom right diagonal
+    //  Get coords to top left square of path
     int startx1 = x - std::min(x, y);
     int starty1 = y - std::min(x, y);
 
@@ -37,8 +37,8 @@ std::vector<std::string> Bishop::getAreasOfInfluence() {
             squares.push_back(toStrCoord(startx1 + i, starty1 + i));
         } 
     }
-    //Calculate top right to bottom left diagonal
-    //Get coords of top right
+    //  Calculate top right to bottom left diagonal
+    //  Get coords of top right
     int startx2 = x + std::min(7 - x, y);
     int starty2 = y - std::min(7 - x, y);
 

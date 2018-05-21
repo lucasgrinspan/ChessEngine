@@ -19,7 +19,7 @@ class Piece {
     private:
         std::string position;
         bool color;
-        //bool inDanger;
+        //  bool inDanger;
         virtual std::vector<std::string> getAreasOfInfluence() = 0;
 };
 #endif

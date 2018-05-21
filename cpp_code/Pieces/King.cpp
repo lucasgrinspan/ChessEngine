@@ -19,7 +19,7 @@ std::vector<std::string> King::getAreasOfInfluence() {
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
 
-    //Add castling moves to the list
+    //  Add castling moves to the list
     if (!getColor()) {
         squares.push_back(toStrCoord(x - 2, y));
         squares.push_back(toStrCoord(x + 2, y));

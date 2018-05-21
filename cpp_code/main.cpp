@@ -14,17 +14,16 @@ int main() {
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', 'B'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                                {'r', 'n', 'b', 'q', ' ', 'k', ' ', 'r'} };
+                                {'p', 'p', 'p', 'p', 'p', ' ', ' ', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', ' ', ' ', 'r'} };
 
     std::vector<std::string> moves {"----", "1111"};
     Board board(initBoard, moves); 
     // board.movePiece("01", "00");
     // board.printBoard();
-    board.movePiece("75", "74");
-    board.movePiece("74", "76");
+    board.movePiece("74", "65");
     board.printBoard();
     
     board.printMoves();
@@ -34,11 +33,11 @@ int main() {
     and the second character is the x coord. The top left square represents "00", while
     the bottom left square represents "77".
 
-    movePiece() takes three parameters, the current tile of the piece, the desired tile of 
-    the piece, and an integer in case that a pawn promotion occurs.
+    movePiece() takes two parameters, the current tile of the piece and the desired tile of 
+    the piece
     It returns the result of the action as a bool.
     */
 
-    //TODO: change variables when king/rook moves
     //TODO: check if king is in check after every move
+    //TODO: check if king is in pin
 }
