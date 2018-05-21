@@ -2,11 +2,6 @@
 #include<vector>
 #include<iostream>
 
-void setMovedPiecesBool(bool movedPieces[6]) {
-    for (int i = 0; i < 6; i++) {
-        movedPiecesBool[i] = movedPieces[i];
-    }
-}
 bool King::movePiece(std::string to) {
     std::vector<std::string> possibleSquares = getAreasOfInfluence();
     for (std::string square : possibleSquares) {
@@ -17,38 +12,20 @@ bool King::movePiece(std::string to) {
     return false;
 }
 std::vector<std::string> King::getAreasOfInfluence() {
-    bool whiteKingMoved = movedPiecesBool[0];
-    bool blackKingMoved = movedPiecesBool[1];
-    bool rookA1Moved = movedPiecesBool[2];
-    bool rookA8Moved = movedPiecesBool[3];
-    bool rookH1Moved = movedPiecesBool[4];
-    bool rookH8Moved = movedPiecesBool[5];
 
-    
     std::vector<std::string> squares;
     std::string currentPosition = getPosition();
 
     int x = currentPosition.at(1) - '0';
     int y = currentPosition.at(0) - '0';
 
+    //Add castling moves to the list
     if (!getColor()) {
-        if (!whiteKingMoved) {
-            if (!rookA1Moved) {
-                squares.push_back(toStrCoord(x - 2, y));
-            }
-            if (!rookA8Moved) {
-                squares.push_back(toStrCoord(x + 2, y));
-            }
-        }
+        squares.push_back(toStrCoord(x - 2, y));
+        squares.push_back(toStrCoord(x + 2, y));
     } else {
-        if (!blackKingMoved) {
-            if (!rookH1Moved) {
-                squares.push_back(toStrCoord(x - 2, y));
-            }
-            if (!rookH8Moved) {
-                squares.push_back(toStrCoord(x + 2, y));
-            }
-        }
+        squares.push_back(toStrCoord(x - 2, y));
+        squares.push_back(toStrCoord(x + 2, y));
     }
 
     for (int i = -1; i < 2; i++) {

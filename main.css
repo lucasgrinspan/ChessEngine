@@ -35,6 +35,11 @@ body {
     grid-template-columns: 16px repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr) 16px;
 }
+.piece {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
 .black-tile {
     background-color: var(--board-dark-tile);
 }

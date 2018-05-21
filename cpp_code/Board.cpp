@@ -12,10 +12,33 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 
-Board::Board(char board[8][8], bool movedPieces[6], std::vector<std::string> moves) {
+Board::Board(char board[8][8], std::vector<std::string> moves) {
+    //White king, black king, a1, a8, h1, h8
+    bool movedPieces[6] = {false, false, false, false, false, false};
+    
     //Save the moves from the move list
     for (int i = 0; i < moves.size(); i++) {
         moveList.push_back(moves[i]);
+
+        //Set up variables for checking if pieces moved for castling
+        //King is not allowed to castle if the pieces involved have moved
+        std::vector<std::string> kingRookSquares {"74", "04", "70", "77", "00", "07"};
+        std::string initSquare = moves[i].substr(0, 2);
+        std::string endSquare = moves[i].substr(2, 2);
+        //Check the move list and see if any of the rooks/kings moved
+        for (int j = 0; j < kingRookSquares.size(); j++) {
+            std::size_t found1 = initSquare.find(kingRookSquares[j]);
+            std::size_t found2 = endSquare.find(kingRookSquares[j]);
+            if (found1 != std::string::npos) {
+                movedPieces[j] = true;
+            } 
+            if (found2 != std::string::npos) {
+                movedPieces[j] = true;
+            }
+        }
+    }
+    for (int i = 0; i < 6; i++) {
+        movedPiecesState[i] = movedPieces[i];
     }
 
     //Read from parameter board
@@ -45,7 +68,7 @@ Board::Board(char board[8][8], bool movedPieces[6], std::vector<std::string> mov
                 currentPieces.push_back(queen);
             } else if (board[i][j] == 'k' || board[i][j] == 'K') {
                 std::string position = std::to_string(i) + std::to_string(j);
-                Piece* king = new King(position, board[i][j] == 'K', movedPieces);
+                Piece* king = new King(position, board[i][j] == 'K');
                 currentPieces.push_back(king);
             } else if (board[i][j] == 'p' || board[i][j] == 'P') {
                 std::string position = std::to_string(i) + std::to_string(j);
@@ -141,23 +164,47 @@ bool Board::validateMove(Piece* piece, std::string to) {
     //If the move is to castle, check if it is possible
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
     if (castling) {
+        //King is not allowed to castle if it has previously moved
+        if (color) {
+            if (movedPiecesState[1]) {
+                return false;
+            }
+        } else {
+            if (movedPiecesState[0]) {
+                return false;
+            }
+        }
+        
         std::string fromRook;
         std::string toRook;
         Piece* rook;
         if (boardState[y0][x0] == 'k') {
             if (delx == 2) {
+                //Check if rook has moved previously
+                if (movedPiecesState[3]) {
+                    return false;
+                }
                 //Move rook
                 fromRook = "77";
                 toRook = "75";
             } else if (delx == -2) {
+                if (movedPiecesState[2]) {
+                    return false;
+                }
                 fromRook = "70";
                 toRook = "73";
             }
         } else if (boardState[y0][x0] == 'K') {
             if (delx == 2) {
+                if (movedPiecesState[5]) {
+                    return false;
+                }
                 fromRook = "07";
                 toRook = "05";
             } else if (delx == -2) {
+                if (movedPiecesState[4]) {
+                    return false;
+                }
                 fromRook = "00";
                 toRook = "03";
             }   
@@ -288,6 +335,7 @@ bool Board::movePiece(std::string from, std::string to) {
     std::string fromRook;
     std::string toRook;
     Piece* rook;
+
     if (castling) {
         std::cout << "castling detected" << std::endl;
         if (boardState[y0][x0] == 'k') {
@@ -315,7 +363,7 @@ bool Board::movePiece(std::string from, std::string to) {
             }
         }
     }
-    
+
     //True if the move is en passant
     bool enPassant =    (std::tolower(boardState[y0][x0]) == 'p') &&
                         (x0 != x1) &&
@@ -416,6 +464,20 @@ bool Board::movePiece(std::string from, std::string to) {
         }
         //Add move to the move list
         moveList.push_back(from + to);
+
+        //Check to see if the king or rook moved, so that the castling state is updated
+        std::vector<std::string> kingRookSquares {"74", "04", "70", "77", "00", "07"};
+        
+        for (int j = 0; j < kingRookSquares.size(); j++) {
+            std::size_t found1 = from.find(kingRookSquares[j]);
+            std::size_t found2 = to.find(kingRookSquares[j]);
+            if (found1 != std::string::npos) {
+                movedPiecesState[j] = true;
+            } 
+            if (found2 != std::string::npos) {
+                movedPiecesState[j] = true;
+            }
+        }
         
     }
     return result;
