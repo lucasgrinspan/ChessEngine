@@ -16,18 +16,16 @@ int main() {
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p'},
-                                {'r', 'n', 'b', 'q', 'k', ' ', ' ', 'r'} };
+                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
     std::vector<std::string> moves {"----", "1111"};
     Board board(initBoard, moves); 
-    // board.movePiece("01", "00");
-    // board.printBoard();
-    board.movePiece("15", "35");
-    board.printBoard();
+    std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
+    for (std::string move : possibleMoves) {
+        std::cout << move << std::endl;
+    }
     
-    board.printMoves();
-
     /* DOCUMENTATION
     Board coordinates are given by a string where the first character is the y coord,
     and the second character is the x coord. The top left square represents "00", while
@@ -37,7 +35,4 @@ int main() {
     the piece
     It returns the result of the action as a bool.
     */
-
-    //TODO: check if king is in check after every move
-    //TODO: check if king is in pin
 }

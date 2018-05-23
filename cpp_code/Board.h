@@ -8,7 +8,7 @@ class Board {
     public:
         Board(char board[8][8], std::vector<std::string> moves);
         std::vector<Piece*> getCurrentPieces();
-        bool movePiece(std::string from, std::string to);
+        bool movePiece(std::string from, std::string to, bool = true, bool = true);
         std::vector<std::string> getPossibleMoves(bool color);
 
         //  Debugging

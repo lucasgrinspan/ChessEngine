@@ -16,10 +16,10 @@ class Piece {
             return (((x >= 0) && (x <= 7)) && ((y >= 0) && (y <= 7)));
         }
         virtual bool movePiece(std::string to) = 0;
+        virtual std::vector<std::string> getAreasOfInfluence() = 0;
     private:
         std::string position;
         bool color;
         //  bool inDanger;
-        virtual std::vector<std::string> getAreasOfInfluence() = 0;
 };
 #endif
