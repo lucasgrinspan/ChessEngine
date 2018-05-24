@@ -2,6 +2,7 @@
 #include<string>
 #include"Board.h"
 #include"Piece.h"
+#include"Evaluator.h"
 #include"Pieces/Pawn.h"
 #include"Pieces/Rook.h"
 #include"Pieces/Knight.h"
@@ -22,9 +23,7 @@ int main() {
     std::vector<std::string> moves {"----", "1111"};
     Board board(initBoard, moves); 
     std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
-    for (std::string move : possibleMoves) {
-        std::cout << move << std::endl;
-    }
+    Evaluator evaluator(possibleMoves);
     
     /* DOCUMENTATION
     Board coordinates are given by a string where the first character is the y coord,
