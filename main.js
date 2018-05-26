@@ -23,6 +23,7 @@ const {app, BrowserWindow} = require('electron')
             protocol: 'file:',
             slashes: true
         }))
+
         
         //Uncomment next line to open dev tools on run
         win.webContents.openDevTools({detach: true})
