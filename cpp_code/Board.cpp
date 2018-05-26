@@ -338,6 +338,22 @@ bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std
             if (inCheck(std::to_string(y1) + std::to_string(x1), !color)) {
                 return false;
             }
+            if (boardState[y1][x1] != ' ') {
+                char previousPieceIcon = boardState[y1][x1];
+                boardState[y1][x1] = ' ';
+                Piece* targetPiece;
+                for (Piece* piece : currentPieces) {
+                    targetPiece = piece;
+                    targetPiece->setPosition("--");
+                    if (inCheck(std::to_string(y1) + std::to_string(x1), !color)) {
+                        targetPiece->setPosition(std::to_string(y1) + std::to_string(x1));
+                        boardState[y1][x1] = previousPieceIcon;
+                        return false;
+                    }
+                    targetPiece->setPosition(std::to_string(y1) + std::to_string(x1));
+                    boardState[y1][x1] = previousPieceIcon;
+                }
+            }
         }
         //  Check the case of en passant
         else if (enPassant) {

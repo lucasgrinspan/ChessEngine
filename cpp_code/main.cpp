@@ -11,20 +11,33 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 int main() {
-    char initBoard[8][8] = {    {'R', ' ', ' ', ' ', 'K', ' ', ' ', 'R'}, 
+    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
-    std::vector<std::string> moves {"----", "1111"};
+    std::vector<std::string> moves {"----"};
     Board board(initBoard, moves); 
-    std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
-    Evaluator evaluator(possibleMoves);
-    
+    //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
+    //Evaluator evaluator(possibleMoves);
+
+    while (false) {
+        std::string move;
+        std::cin >> move;
+        board.movePiece(move.substr(0,2), move.substr(2));
+        board.printBoard();
+        std::vector<std::string> possibleMoves = board.getPossibleMoves(true);
+        int num = rand() % possibleMoves.size(); 
+        std::string nextMove = possibleMoves[num];
+        board.movePiece(nextMove.substr(0, 2), nextMove.substr(2));
+        board.printBoard();
+
+    }
+    //TODO: add check validation for pieces being taken
     /* DOCUMENTATION
     Board coordinates are given by a string where the first character is the y coord,
     and the second character is the x coord. The top left square represents "00", while
