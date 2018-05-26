@@ -36,15 +36,21 @@ body {
     grid-template-rows: repeat(8, 1fr) 16px;
 }
 .piece {
-    width: 16px;
-    height: 16px;
+    width: 50px;
+    height: 50px;
     display: block;
 }
 .black-tile {
     background-color: var(--board-dark-tile);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .white-tile {
     background-color: var(--board-light-tile);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .notation-bar {
     color: var(--board-light-tile);
