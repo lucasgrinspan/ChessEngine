@@ -25,7 +25,7 @@ int main() {
     //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
     //Evaluator evaluator(possibleMoves);
 
-    while (false) {
+    while (true) {
         std::string move;
         std::cin >> move;
         board.movePiece(move.substr(0,2), move.substr(2));
