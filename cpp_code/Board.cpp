@@ -166,6 +166,15 @@ bool Board::validateMove(Piece* piece, std::string to) {
             }
         }
     }
+    //  Check if piece is occupied for pawn
+    //  Pawns cannot take headon
+    if (std::tolower(boardState[y0][x0]) == 'p') {
+        if (delx == 0) {
+            if (boardState[y1][x1] != ' ') {
+                return false;
+            } 
+        }
+    }
     //  If the move is to castle, check if it is possible
     bool castling = (tolower(boardState[y0][x0]) == 'k') && (std::abs(delx) == 2);
     if (castling) {

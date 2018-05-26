@@ -21,11 +21,11 @@ int main() {
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
     std::vector<std::string> moves {"----"};
-    Board board(initBoard, moves); 
+    Board board(initBoard, moves);
     //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
     //Evaluator evaluator(possibleMoves);
 
-    while (true) {
+    while (false) {
         std::string move;
         std::cin >> move;
         board.movePiece(move.substr(0,2), move.substr(2));
