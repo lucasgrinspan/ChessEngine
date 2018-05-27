@@ -13,7 +13,6 @@ for (var i = 0; i < pieces.length; i++) {
     var pieceIcon = pieces[i].id;
     board[Math.floor(tileNumber / 8)][tileNumber % 8] = pieceIcon;
 }
-console.log(board);
 for (var i = 0; i < 8; i++) {
     var boardString = "";
     for (var j = 0; j < 8; j++) {

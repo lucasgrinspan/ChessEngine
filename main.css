@@ -25,9 +25,9 @@ body {
 }
 #chess-board {
     width: 400px;
-    height: 400px;
+    height: 416px;
     min-width: 400px;
-    min-height: 400px;
+    min-height: 416px;
     margin: 10px;
     margin-top: 47px;
     border-radius: 5px;

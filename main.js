@@ -9,9 +9,9 @@ const {app, BrowserWindow} = require('electron')
     function createWindow () {
         // Create the browser window.
         win = new BrowserWindow({width: 700, 
-                                height: 457, 
+                                height: 474, 
                                 'minWidth': 436, 
-                                'minHeight': 457, 
+                                'minHeight': 474, 
                                 frame: false, 
                                 titleBarStyle: "hiddenInset", 
                                 resizable: true, 
