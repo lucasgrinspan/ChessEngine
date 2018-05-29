@@ -629,9 +629,6 @@ bool Board::movePiece(std::string from, std::string to, bool diagnostics, bool a
                         currentPieces.push_back(promotedKnight);
                         break;
                     }
-                    default: {
-                        throw std::invalid_argument("Invalid promotion piece");
-                    }
                 }
             }
             //  Add move to the move list

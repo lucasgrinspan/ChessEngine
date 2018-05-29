@@ -10,6 +10,26 @@
 #include"Pieces/Queen.h"
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
+#include"../node.h"
+void Sum(const v8::FunctionCallbackInfo<v8::Value>& args){
+    v8::Isolate* isolate = args.GetIsolate();
+
+    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+                                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                                {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+
+    std::vector<std::string> moves {"----"};
+    Board board(initBoard, moves);
+
+    auto total = v8::Number::New(isolate, board.getPossibleMoves(true).size());
+
+    args.GetReturnValue().Set(total);
+}
 int main() {
     char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
                                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
@@ -48,3 +68,7 @@ int main() {
     It returns the result of the action as a bool.
     */
 }
+void Initialize(v8::Local<v8::Object> exports) {
+    NODE_SET_METHOD(exports, "sum", Sum);
+}
+NODE_MODULE(Evaluator, Initialize)

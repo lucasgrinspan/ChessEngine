@@ -35,8 +35,8 @@ function changeBoardColor() {
         color2 = document.defaultView.getComputedStyle(theme, null)["backgroundColor"];
         color1 = document.defaultView.getComputedStyle(theme.previousElementSibling, null)["backgroundColor"];
     } else {
-        color1 = document.defaultView.getComputedStyle(theme, null)["backgroundColor"];;
-        color2 = document.defaultView.getComputedStyle(theme.nexElementSibling, null)["backgroundColor"];;
+        color1 = document.defaultView.getComputedStyle(theme, null)["backgroundColor"];
+        color2 = document.defaultView.getComputedStyle(theme.nextElementSibling, null)["backgroundColor"];
     }
     var whiteTiles = document.getElementsByClassName("white-tile");
     var blackTiles = document.getElementsByClassName("black-tile");
