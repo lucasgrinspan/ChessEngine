@@ -1,0 +1,49 @@
+#preset1 {
+    background-color: #efe9de;
+    border-radius: 5px 0 0 5px;
+}
+#preset1alt {
+    background-color: #a58448;
+    border-radius: 0 5px 5px 0;
+}
+#preset2 {
+    background-color: #deefe2;
+    border-radius: 5px 0 0 5px;
+}
+#preset2alt {
+    background-color: #769656;
+    border-radius: 0 5px 5px 0;
+}
+#preset3 {
+    background-color: #dee9ef;
+    border-radius: 5px 0 0 5px;
+}
+#preset3alt {
+    background-color: #83aaea;
+    border-radius: 0 5px 5px 0;
+
+}
+#preset4 {
+    background-color: #ffe8dd;
+    border-radius: 5px 0 0 5px;
+}
+#preset4alt {
+    background-color: #e57d49;
+    border-radius: 0 5px 5px 0;
+}
+#preset5 {
+    background-color: #e7bddb;
+    border-radius: 5px 0 0 5px;
+}
+#preset5alt {
+    border-radius: 0 5px 5px 0;
+    background-color: #991d8a;
+}
+#preset6 {
+    background-color: #e0d7bc;
+    border-radius: 5px 0 0 5px;
+}
+#preset6alt {
+    background-color: #0490b3;
+    border-radius: 0 5px 5px 0;
+}

@@ -1,3 +1,11 @@
+var board =[[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']];
 var isPieceSelected = false;
 var isPieceBeingHeld = false;
 var HTMLPieceText;
@@ -12,12 +20,37 @@ function applyEventHandlers(target) {
     target.onmousemove = dragPiece;
     target.onmouseup = dropPiece;
 }
+//  For debugging
+function generateBoard() {
+    //  Clear board
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            board[i][j] = ' ';
+        }
+    }
+    var pieces = document.getElementsByClassName("piece");
+    //  Reads board from application into array
+    for (var i = 0; i < pieces.length; i++) {
+        var tileNumber = parseInt(pieces[i].parentElement.id.slice(5));
+        var pieceIcon = pieces[i].id;
+        board[Math.floor(tileNumber / 8)][tileNumber % 8] = pieceIcon;
+    }
+    for (var i = 0; i < 8; i++) {
+        var boardString = "";
+        for (var j = 0; j < 8; j++) {
+            boardString += (board[i][j] + " ");
+        }
+        console.log(boardString);
+        boardString = "";
+    }
+}
 function movePiece() {
     if (isPieceSelected) {
         isPieceSelected = false;
         event.target.innerHTML = HTMLPieceText;
         applyEventHandlers(event.target.firstElementChild)
         previousTileElement.innerHTML = "";
+        generateBoard();
     }
 }
 function selectPiece() {
@@ -61,10 +94,12 @@ function dropPiece() {
         previousTileElement.innerHTML = "";
         newTileElement.innerHTML = HTMLPieceText;
         applyEventHandlers(newTileElement.childNodes[0]);
+        generateBoard();
     }
 }
 
 var pieces = document.getElementsByClassName("piece");
+generateBoard();
 for (var i = 0; i < pieces.length; i++) {
     pieces[i].onmousedown = selectPiece;
     pieces[i].onmousemove = dragPiece;

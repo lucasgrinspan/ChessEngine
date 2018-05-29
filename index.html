@@ -4,27 +4,29 @@
         <title>Chess Bot</title>
         <link rel="stylesheet" href="main.css">
         <link rel="stylesheet" href="tiles.css">
+        <link rel="stylesheet" href="tile-demo-colors.css">
     </head>
     <body>
-        <div id="title-bar"></div>
-         <!-- Generate the chess board -->
+        <div id="title-bar">
+        </div>
+        <!-- Generate the chess board -->
         <div id="chess-board">
-            <div class="notation-bar" id="column1">A</div>
-            <div class="notation-bar" id="column2">B</div>
-            <div class="notation-bar" id="column3">C</div>
-            <div class="notation-bar" id="column4">D</div>
-            <div class="notation-bar" id="column5">E</div>
-            <div class="notation-bar" id="column6">F</div>
-            <div class="notation-bar" id="column7">G</div>
-            <div class="notation-bar" id="column8">H</div>
-            <div class="notation-bar" id="row1">8</div>
-            <div class="notation-bar" id="row2">7</div>
-            <div class="notation-bar" id="row3">6</div>
-            <div class="notation-bar" id="row4">5</div>
-            <div class="notation-bar" id="row5">4</div>
-            <div class="notation-bar" id="row6">3</div>
-            <div class="notation-bar" id="row7">2</div>
-            <div class="notation-bar" id="row8">1</div>
+            <div class="notation-bar bottom" id="column1">A</div>
+            <div class="notation-bar bottom" id="column2">B</div>
+            <div class="notation-bar bottom" id="column3">C</div>
+            <div class="notation-bar bottom" id="column4">D</div>
+            <div class="notation-bar bottom" id="column5">E</div>
+            <div class="notation-bar bottom" id="column6">F</div>
+            <div class="notation-bar bottom" id="column7">G</div>
+            <div class="notation-bar bottom" id="column8">H</div>
+            <div class="notation-bar left" id="row1">8</div>
+            <div class="notation-bar left" id="row2">7</div>
+            <div class="notation-bar left" id="row3">6</div>
+            <div class="notation-bar left" id="row4">5</div>
+            <div class="notation-bar left" id="row5">4</div>
+            <div class="notation-bar left" id="row6">3</div>
+            <div class="notation-bar left" id="row7">2</div>
+            <div class="notation-bar left" id="row8">1</div>
             <div id="corner-piece"></div>
             <div class="white-tile tile" id="white0"><img id="R" class="piece" src="chesspieces/br.png"></div>
             <div class="black-tile tile" id="black1"><img id="N" class="piece" src="chesspieces/bn.png"></div>
@@ -90,9 +92,40 @@
             <div class="white-tile tile" id="white61"><img id="b" class="piece" src="chesspieces/wb.png"></div>
             <div class="black-tile tile" id="black62"><img id="n" class="piece" src="chesspieces/wn.png"></div>
             <div class="white-tile tile" id="white63"><img id="r" class="piece" src="chesspieces/wr.png"></div>
-
         </div>
-        <script type="text/javascript" src="board-generator.js"></script>
+        <div class="icon" id="preference-icon" onclick="displayPreferences()"></div>
+        <div id="popup-overlay" onclick="clearPopup()">
+            <div class="popup-window" id="preferences" onclick="blockClickProp()">
+                <div id="theme-wrapper">
+                    <div class="theme-display" onclick="changeBoardColor()">
+                        <div id="preset1"class="tile-demo"></div>
+                        <div id="preset1alt" class="tile-demo"></div>
+                    </div>
+                    <div class="theme-display" onclick="changeBoardColor()">
+                            <div id="preset2"class="tile-demo"></div>
+                            <div id="preset2alt" class="tile-demo"></div>
+                    </div>
+                    <div class="theme-display" onclick="changeBoardColor()">
+                            <div id="preset3"class="tile-demo"></div>
+                            <div id="preset3alt" class="tile-demo"></div>
+                    </div>
+                    <div class="theme-display" onclick="changeBoardColor()">
+                            <div id="preset4"class="tile-demo"></div>
+                            <div id="preset4alt" class="tile-demo"></div>
+                    </div>
+                    <div class="theme-display" onclick="changeBoardColor()">
+                            <div id="preset5"class="tile-demo"></div>
+                            <div id="preset5alt" class="tile-demo"></div>
+                    </div>
+                    <div class="theme-display" onclick="changeBoardColor()">
+                            <div id="preset6"class="tile-demo"></div>
+                            <div id="preset6alt" class="tile-demo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script type="text/javascript" src="piece-mover.js"></script>
+        <script type="text/javascript" src="button-behavior.js"></script>
     </body>
-</html>
+    </html>
+    
