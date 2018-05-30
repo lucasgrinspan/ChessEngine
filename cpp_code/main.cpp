@@ -11,24 +11,32 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 #include"../node.h"
-void Sum(const v8::FunctionCallbackInfo<v8::Value>& args){
+char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+                            {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                            {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+
+std::vector<std::string> moveList {"----"};
+Board board(initBoard, moveList);
+
+void generatePossibleMoves(const v8::FunctionCallbackInfo<v8::Value>& args){
     v8::Isolate* isolate = args.GetIsolate();
+    v8::String::Utf8Value str(args[0]->ToString());
+    auto piece = (const char*)(*str);
 
-    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
-                                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+    std::vector<std::string> moves = board.getPossibleMovesOfPiece(piece);
+    std::string squaresList = "";
+    for (std::string move : moves) {
+        squaresList += move;
+    }
 
-    std::vector<std::string> moves {"----"};
-    Board board(initBoard, moves);
-
-    auto total = v8::Number::New(isolate, board.getPossibleMoves(true).size());
-
-    args.GetReturnValue().Set(total);
+    char *squaresListConvert = &squaresList[0u];
+    auto squares = v8::String::NewFromUtf8(isolate, squaresListConvert);
+    args.GetReturnValue().Set(squares);
 }
 int main() {
     char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
@@ -44,7 +52,6 @@ int main() {
     Board board(initBoard, moves);
     //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
     //Evaluator evaluator(possibleMoves);
-
     while (false) {
         std::string move;
         std::cin >> move;
@@ -69,6 +76,6 @@ int main() {
     */
 }
 void Initialize(v8::Local<v8::Object> exports) {
-    NODE_SET_METHOD(exports, "sum", Sum);
+    NODE_SET_METHOD(exports, "generatePossibleMoves", generatePossibleMoves);
 }
 NODE_MODULE(Evaluator, Initialize)

@@ -138,6 +138,5 @@ for (var i = 0; i < tiles.length; i++) {
     tiles[i].onclick = movePiece;
 }
 generateBoard();
-console.log(getPieceList())
 const Evaluator = require('./build/Release/Evaluator');
-console.log(Evaluator.sum());
+console.log(Evaluator.generatePossibleMoves("64"));
