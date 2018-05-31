@@ -52,18 +52,10 @@ function generateBoard() {
     var pieces = document.getElementsByClassName("piece");
     //  Reads board from application into array
     for (var i = 0; i < pieces.length; i++) {
-        var tileNumber = parseInt(pieces[i].parentElement.id.slice(5));
+        var tileNumber = parseInt(pieces[i].parentElement.id.slice(4));
         var pieceIcon = pieces[i].id;
         board[Math.floor(tileNumber / 8)][tileNumber % 8] = pieceIcon;
     }
-    // for (var i = 0; i < 8; i++) {
-    //     var boardString = "";
-    //     for (var j = 0; j < 8; j++) {
-    //         boardString += (board[i][j] + " ");
-    //     }
-    //     console.log(boardString);
-    //     boardString = "";
-    // }
 }
 function movePiece() {
     if (isPieceSelected) {
@@ -71,8 +63,8 @@ function movePiece() {
         event.target.innerHTML = HTMLPieceText;
         previousTileElement.innerHTML = "";
         applyEventHandlers(event.target.firstElementChild)
-        var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(5)));
-        var currentTile = generateCoordsFromTileNum(parseInt(event.target.id.slice(5)));
+        var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
+        var currentTile = generateCoordsFromTileNum(parseInt(event.target.id.slice(4)));
         logMove(previouseTile, currentTile);
         generateBoard();
     }
@@ -82,6 +74,18 @@ function selectPiece() {
     if (!event) var event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
+
+    //  Generates possible moves to display as an overlay on the board
+    tileNumber = generateCoordsFromTileNum(event.target.parentElement.id.slice(4));
+    var possibleTiles = Evaluator.generatePossibleMoves(tileNumber)
+    var possibleTileNumbers = [];
+    var greenCircleHTML = document.getElementById("green-circle-wrapper").innerHTML;
+    for (var i = 0; i < possibleTiles.length; i++) {
+        //  Convert from coordinates to tile number and creates the image
+        possibleTileNumbers.push((possibleTiles[i][0] * 8) + (possibleTiles[i][1] % 8));
+        document.getElementById("tile" + possibleTileNumbers[i]).innerHTML = greenCircleHTML;
+    }
+
 
     isPieceBeingHeld = true;
     selectedPiece = event.target;
@@ -119,8 +123,8 @@ function dropPiece() {
         if (newTileElement == previousTileElement) {
             isPieceSelected = true;
         } else {
-            var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(5)));
-            var currentTile = generateCoordsFromTileNum(parseInt(newTileElement.id.slice(5)));
+            var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
+            var currentTile = generateCoordsFromTileNum(parseInt(newTileElement.id.slice(4)));
             logMove(previouseTile, currentTile);
             generateBoard();
         }
@@ -139,4 +143,3 @@ for (var i = 0; i < tiles.length; i++) {
 }
 generateBoard();
 const Evaluator = require('./build/Release/Evaluator');
-console.log(Evaluator.generatePossibleMoves("64"));

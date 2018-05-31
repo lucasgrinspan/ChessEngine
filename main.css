@@ -128,3 +128,6 @@ body {
     display: none;
     position: absolute;
 }
+#green-circle-wrapper {
+    display: none;
+}

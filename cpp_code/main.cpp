@@ -29,14 +29,15 @@ void generatePossibleMoves(const v8::FunctionCallbackInfo<v8::Value>& args){
     auto piece = (const char*)(*str);
 
     std::vector<std::string> moves = board.getPossibleMovesOfPiece(piece);
-    std::string squaresList = "";
-    for (std::string move : moves) {
-        squaresList += move;
-    }
+    v8::Local<v8::Array> v8MoveList = v8::Array::New(isolate);
 
-    char *squaresListConvert = &squaresList[0u];
-    auto squares = v8::String::NewFromUtf8(isolate, squaresListConvert);
-    args.GetReturnValue().Set(squares);
+    for (unsigned int i = 0; i < moves.size(); i++) {
+        char *MoveCharArr = &moves[i][0u];
+        auto v8MoveString = v8::String::NewFromUtf8(isolate, MoveCharArr);
+        v8MoveList->Set(i, v8MoveString);
+    }
+    
+    args.GetReturnValue().Set(v8MoveList);
 }
 int main() {
     char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
