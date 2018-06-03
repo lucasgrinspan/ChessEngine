@@ -13,6 +13,16 @@ var HTMLPieceText;
 var previousTileElement;
 var selectedPiece;
 var windowOffset = [0, 0];
+function displayGreenCircle(tileNumber) {
+    document.getElementById("tile" + tileNumber).innerHTML += "<svg class='green-circle-svg' id='circle" + tileNumber + "' onclick='movePiece()' viewBox='0 0 50 50' height='50' width='50' xmlns='http://www.w3.org/2000/svg'><circle class='circle' cx='25' cy='25' r='7' fill='rgba(17, 132, 0, 0.73)' style='pointer-events:none;'/></svg>";
+}
+function clearGreenCircles() {
+    var circles = document.getElementsByClassName("green-circle-svg");
+    var limit = circles.length;
+    while (circles.length > 0){
+        circles[0].parentNode.removeChild(circles[0]);
+    }
+}
 function generateCoordsFromTileNum(tileNumber) {
     y = String(Math.floor(tileNumber / 8));
     x = String(tileNumber % 8);
@@ -34,14 +44,17 @@ function getPieceList() {
     return pieceList;
 }
 //  Displays the green circles over the board indicating possible moves
-function displayTiles() {
-}
 function applyEventHandlers(target) {
     target.onmousedown = selectPiece;
     target.onmousemove = dragPiece;
     target.onmouseup = dropPiece;
 }
-//  For debugging
+function clearMove() {
+    clearGreenCircles();
+    isPieceBeingHeld = false;
+    isPieceSelected = false;
+}
+//  For debugging and undo operator
 function generateBoard() {
     //  Clear board
     for (var i = 0; i < 8; i++) {
@@ -60,17 +73,19 @@ function generateBoard() {
 function movePiece() {
     if (isPieceSelected) {
         isPieceSelected = false;
-        event.target.innerHTML = HTMLPieceText;
+        var tile = event.target.parentElement;
+        tile.innerHTML = HTMLPieceText;
         previousTileElement.innerHTML = "";
-        applyEventHandlers(event.target.firstElementChild)
+        applyEventHandlers(tile.firstElementChild)
         var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
-        var currentTile = generateCoordsFromTileNum(parseInt(event.target.id.slice(4)));
+        var currentTile = generateCoordsFromTileNum(parseInt(tile.id.slice(4)));
         logMove(previouseTile, currentTile);
-        generateBoard();
+        clearGreenCircles();
+        //generateBoard();
     }
 }
 function selectPiece() {
-    //  Stops propogation of pieces
+    //  Stops propogation of event to tile
     if (!event) var event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
@@ -78,14 +93,11 @@ function selectPiece() {
     //  Generates possible moves to display as an overlay on the board
     tileNumber = generateCoordsFromTileNum(event.target.parentElement.id.slice(4));
     var possibleTiles = Evaluator.generatePossibleMoves(tileNumber)
-    var possibleTileNumbers = [];
-    var greenCircleHTML = document.getElementById("green-circle-wrapper").innerHTML;
+    var greenCircleHTML = document.getElementById("green-circle-wrapper");
     for (var i = 0; i < possibleTiles.length; i++) {
         //  Convert from coordinates to tile number and creates the image
-        possibleTileNumbers.push((possibleTiles[i][0] * 8) + (possibleTiles[i][1] % 8));
-        document.getElementById("tile" + possibleTileNumbers[i]).innerHTML = greenCircleHTML;
+        displayGreenCircle((possibleTiles[i][0] * 8) + (possibleTiles[i][1] % 8))
     }
-
 
     isPieceBeingHeld = true;
     selectedPiece = event.target;
@@ -114,19 +126,40 @@ function dropPiece() {
     if (isPieceBeingHeld) {
         isPieceBeingHeld = false;
         var newTileElement = document.elementsFromPoint(event.clientX, event.clientY)[1];
-        //  If the tiles are the same, then emulate a click
-        var previousePiece = document.elementsFromPoint(event.clientX, event.clientY)[0];
-        previousTileElement.innerHTML = "";
-        newTileElement.innerHTML = HTMLPieceText;
-        applyEventHandlers(newTileElement.childNodes[0]);
         
-        if (newTileElement == previousTileElement) {
-            isPieceSelected = true;
+        var onValidTile;
+        if (newTileElement.getAttribute("class") == "green-circle-svg") {
+            onValidTile = true;
+            newTileElement = newTileElement.parentElement;
+        } else if (newTileElement.getAttribute("class") == "circle") {
+            onValidTile = true;
+            newTileElement = newTileElement.parentElement.parentElement;
+        }
+        var validMove = onValidTile && (newTileElement.firstElementChild.getAttribute("class") == "green-circle-svg");
+        var sameTile = (newTileElement == previousTileElement);
+
+        if (validMove || sameTile) {
+            var previousePiece = document.elementsFromPoint(event.clientX, event.clientY)[0];
+            previousTileElement.innerHTML = "";
+            newTileElement.innerHTML = HTMLPieceText;
+            applyEventHandlers(newTileElement.childNodes[0]);
+            
+            //  If the tiles are the same, then emulate a click
+            if (sameTile) {
+                isPieceSelected = true;
+            } else {
+                var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
+                var currentTile = generateCoordsFromTileNum(parseInt(newTileElement.id.slice(4)));
+                logMove(previouseTile, currentTile);
+                clearGreenCircles();
+                generateBoard();
+            }
         } else {
-            var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
-            var currentTile = generateCoordsFromTileNum(parseInt(newTileElement.id.slice(4)));
-            logMove(previouseTile, currentTile);
-            generateBoard();
+            clearGreenCircles();
+            isPieceBeingHeld = false;
+            //  Reset piece back to original tile
+            previousTileElement.innerHTML = HTMLPieceText;
+            applyEventHandlers(previousTileElement.childNodes[0]);
         }
     }
 }
@@ -139,7 +172,7 @@ for (var i = 0; i < pieces.length; i++) {
 }
 var tiles = document.getElementsByClassName("tile")
 for (var i = 0; i < tiles.length; i++) {
-    tiles[i].onclick = movePiece;
+    tiles[i].onclick = clearMove;
 }
 generateBoard();
 const Evaluator = require('./build/Release/Evaluator');

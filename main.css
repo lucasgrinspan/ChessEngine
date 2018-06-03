@@ -63,6 +63,7 @@ body {
     width: 50px;
     height: 50px;
     display: block;
+    z-index: 3;
 }
 .black-tile {
     background-color: var(--board-dark-tile);
@@ -75,6 +76,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.tile {
+    position: relative;
 }
 .notation-bar {
     color: var(--board-light-tile);
@@ -127,6 +131,13 @@ body {
     background-color: rgba(43, 43, 43, 0.603);
     display: none;
     position: absolute;
+}
+.green-circle-svg {
+    position: absolute;
+}
+.circle {
+    fill: #2c7a39;
+    opacity: 0.40;
 }
 #green-circle-wrapper {
     display: none;
