@@ -15,7 +15,16 @@
         "memory": "cpp",
         "type_traits": "cpp",
         "vector": "cpp",
-        "__split_buffer": "cpp"
+        "__split_buffer": "cpp",
+        "__functional_base": "cpp",
+        "__functional_base_03": "cpp",
+        "__tuple": "cpp",
+        "chrono": "cpp",
+        "functional": "cpp",
+        "limits": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     },
     "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false

@@ -25,7 +25,6 @@ Board board(initBoard, moveList);
 
 void generatePossibleMoves(const v8::FunctionCallbackInfo<v8::Value>& args){
     v8::Isolate* isolate = args.GetIsolate();
-
     std::vector<std::string> moves = board.getPossibleMoves(false);
     v8::Local<v8::Array> v8MoveList = v8::Array::New(isolate);
 
@@ -37,30 +36,47 @@ void generatePossibleMoves(const v8::FunctionCallbackInfo<v8::Value>& args){
     
     args.GetReturnValue().Set(v8MoveList);
 }
+void updateBoard(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    //  Read args from js
+    v8::Isolate* isolate = args.GetIsolate();
+    v8::String::Utf8Value str(args[0]->ToString());
+    auto moveChar = (const char*)(*str);
+    //  Convert to std::string for the movePiece() function
+    std::string move(moveChar);
+    //  Remove undefined chars at end
+    for (int i = 0; i < 9; i++) {
+        move.erase(move.size() - 1);
+    }
+    std::cout << move << std::endl;
+    bool result = board.movePiece(move.substr(0,2), move.substr(2), false, true);
+    //  Create js bool type from result and return it
+    v8::Local<v8::Boolean> v8Result = v8::Boolean::New(isolate, result);
+    args.GetReturnValue().Set(v8Result); 
+}
 int main() {
-    char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
-                                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
+    char mainBoardArr[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+                            {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                            {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                            {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
     std::vector<std::string> moves {"----"};
-    Board board(initBoard, moves);
+    Board mainBoard(mainBoardArr, moves);
     //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
     //Evaluator evaluator(possibleMoves);
     while (false) {
         std::string move;
         std::cin >> move;
-        board.movePiece(move.substr(0,2), move.substr(2));
-        board.printBoard();
-        std::vector<std::string> possibleMoves = board.getPossibleMoves(true);
+        mainBoard.movePiece(move.substr(0,2), move.substr(2));
+        mainBoard.printBoard();
+        std::vector<std::string> possibleMoves = mainBoard.getPossibleMoves(true);
         int num = rand() % possibleMoves.size(); 
         std::string nextMove = possibleMoves[num];
-        board.movePiece(nextMove.substr(0, 2), nextMove.substr(2));
-        board.printBoard();
+        mainBoard.movePiece(nextMove.substr(0, 2), nextMove.substr(2));
+        mainBoard.printBoard();
 
     }
     //TODO: add check validation for pieces being taken
@@ -76,5 +92,6 @@ int main() {
 }
 void Initialize(v8::Local<v8::Object> exports) {
     NODE_SET_METHOD(exports, "generatePossibleMoves", generatePossibleMoves);
+    NODE_SET_METHOD(exports, "updateBoard", updateBoard);
 }
 NODE_MODULE(Evaluator, Initialize)

@@ -39,11 +39,12 @@ function getPossibleMoves(pieceCoords) {
     return possibleMovesForTile
 }
 //  Update the board in the C++ fiel
-function updateAddonBoard() {
-
+function updateAddonBoard(from, to) {
+    return Evaluator.updateBoard(from + to)
 }
 //  Generate move list
 function logMove(previousSquare, currentSquare) {
+    updateAddonBoard(previousSquare + currentSquare);
     moveList.push(previousSquare + currentSquare);
 }
 function getPieceList() {
@@ -91,9 +92,9 @@ function movePiece() {
         tile.innerHTML = HTMLPieceText;
         previousTileElement.innerHTML = "";
         applyEventHandlers(tile.firstElementChild)
-        var previouseTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
+        var previousTile = generateCoordsFromTileNum(parseInt(previousTileElement.id.slice(4)));
         var currentTile = generateCoordsFromTileNum(parseInt(tile.id.slice(4)));
-        logMove(previouseTile, currentTile);
+        logMove(previousTile, currentTile);
         clearGreenCircles();
         generateBoard();
     }
