@@ -53,6 +53,20 @@ void updateBoard(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Local<v8::Boolean> v8Result = v8::Boolean::New(isolate, result);
     args.GetReturnValue().Set(v8Result); 
 }
+void getOpponentMove(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    v8::Isolate* isolate = args.GetIsolate();
+
+    std::vector<std::string> moves = board.getPossibleMoves(true);
+    int randomMove = rand() % moves.size(); 
+    std::string nextMove = moves[randomMove];
+    board.movePiece(nextMove.substr(0, 2), nextMove.substr(2), false, true);
+
+    char *MoveCharArr = &nextMove[0u];
+    auto v8MoveString = v8::String::NewFromUtf8(isolate, MoveCharArr);
+
+    args.GetReturnValue().Set(v8MoveString);
+
+}
 int main() {
     char mainBoardArr[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
                             {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
@@ -93,5 +107,6 @@ int main() {
 void Initialize(v8::Local<v8::Object> exports) {
     NODE_SET_METHOD(exports, "generatePossibleMoves", generatePossibleMoves);
     NODE_SET_METHOD(exports, "updateBoard", updateBoard);
+    NODE_SET_METHOD(exports, "getOpponentMove", getOpponentMove);
 }
 NODE_MODULE(Evaluator, Initialize)

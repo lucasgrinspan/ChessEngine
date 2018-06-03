@@ -14,7 +14,29 @@ var previousTileElement;
 var selectedPiece;
 var windowOffset = [0, 0];
 function displayGreenCircle(tileNumber) {
-    document.getElementById("tile" + tileNumber).innerHTML += "<svg class='green-circle-svg' id='circle" + tileNumber + "' onclick='movePiece()' viewBox='0 0 50 50' height='50' width='50' xmlns='http://www.w3.org/2000/svg'><circle class='circle' cx='25' cy='25' r='7' fill='rgba(17, 132, 0, 0.73)' style='pointer-events:none;'/></svg>";
+    var tile = document.getElementById("tile" + tileNumber)
+    if (tile.innerHTML == "") {
+        tile.innerHTML = "<svg class='green-circle-svg' id='circle" + tileNumber + "' onclick='movePiece()' onmouseover='greenCircleHover(true)' onmouseleave='greenCircleHover(false)' viewBox='0 0 50 50' height='50' width='50' xmlns='http://www.w3.org/2000/svg'><circle class='circle' cx='25' cy='25' r='7' fill='rgba(17, 132, 0, 0.73)' style='pointer-events:none;'/></svg>";
+    } else {
+        tile.innerHTML += "<svg class='green-circle-svg' id='circle" + tileNumber + "' onclick='movePiece()' onmouseover='greenCircleHover(true)' onmouseleave='greenCircleHover(false)' viewBox='0 0 50 50' height='50' width='50' xmlns='http://www.w3.org/2000/svg'><rect class='rect' width='50' height='50' fill='transparent' style='pointer-events:none;'/></svg>";
+    }
+}
+function greenCircleHover(display) {
+    circle = event.target.childNodes[0].getAttribute("class") == "circle";
+    if (circle) {
+        if (display) {
+            event.target.childNodes[0].setAttribute('r', '10');
+        } else {
+            event.target.childNodes[0].setAttribute('r', '7');
+        }
+    //  If its the overlay for taking a piece    
+    } else {
+        if (display) {
+            event.target.childNodes[0].setAttribute('style', 'stroke-width:9px;pointer-events:none;');
+        } else {
+            event.target.childNodes[0].setAttribute('style', 'stroke-width:7px;pointer-events:none;');
+        }
+    }
 }
 function clearGreenCircles() {
     var circles = document.getElementsByClassName("green-circle-svg");
@@ -28,6 +50,12 @@ function generateCoordsFromTileNum(tileNumber) {
     x = String(tileNumber % 8);
     return y + x;
 }
+function generateTileNumFromCoords(coords) {
+    var y = parseInt(coords[0]);
+    var x = parseInt(coords[1]);
+    var tileNumber = (y * 8) + x;
+    return String(tileNumber)
+}
 function getPossibleMoves(pieceCoords) {
     var possibleMoves = Evaluator.generatePossibleMoves();
     var possibleMovesForTile = [];
@@ -38,14 +66,26 @@ function getPossibleMoves(pieceCoords) {
     }
     return possibleMovesForTile
 }
-//  Update the board in the C++ fiel
+//  Update the board in the C++ file
 function updateAddonBoard(from, to) {
     return Evaluator.updateBoard(from + to)
+}
+function applyOpponentMove() {
+    var move = Evaluator.getOpponentMove();
+    var from = generateTileNumFromCoords(move.substring(0, 2));
+    var to = generateTileNumFromCoords(move.substring(2, 4));
+    var HTMLPiece = document.getElementById("tile" + from).innerHTML;
+    document.getElementById("tile" + from).innerHTML = "";
+    document.getElementById("tile" + to).innerHTML = HTMLPiece;
+    console.log(move);
 }
 //  Generate move list
 function logMove(previousSquare, currentSquare) {
     updateAddonBoard(previousSquare + currentSquare);
+    generateBoard();
     moveList.push(previousSquare + currentSquare);
+    console.log(previousSquare + currentSquare);
+    setTimeout(applyOpponentMove, 500);
 }
 function getPieceList() {
     var pieceList = "";
@@ -96,7 +136,6 @@ function movePiece() {
         var currentTile = generateCoordsFromTileNum(parseInt(tile.id.slice(4)));
         logMove(previousTile, currentTile);
         clearGreenCircles();
-        generateBoard();
     }
 }
 function selectPiece() {
@@ -104,6 +143,8 @@ function selectPiece() {
     if (!event) var event = window.event;
     event.cancelBubble = true;
     if (event.stopPropagation) event.stopPropagation();
+
+    clearGreenCircles();
 
     //  Generates possible moves to display as an overlay on the board
     var pieceCoords = generateCoordsFromTileNum(event.target.parentElement.id.slice(4));
@@ -150,7 +191,9 @@ function dropPiece() {
             onValidTile = true;
             newTileElement = newTileElement.parentElement.parentElement;
         }
-        var validMove = onValidTile && (newTileElement.firstElementChild.getAttribute("class") == "green-circle-svg");
+        var validMove = onValidTile && 
+                        ((newTileElement.firstElementChild.getAttribute("class") == "green-circle-svg") ||
+                        newTileElement.childNodes.length > 1);
         var sameTile = (newTileElement == previousTileElement);
 
         if (validMove || sameTile) {
@@ -167,7 +210,6 @@ function dropPiece() {
                 var currentTile = generateCoordsFromTileNum(parseInt(newTileElement.id.slice(4)));
                 logMove(previouseTile, currentTile);
                 clearGreenCircles();
-                generateBoard();
             }
         } else {
             clearGreenCircles();
