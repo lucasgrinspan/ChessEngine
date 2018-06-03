@@ -667,20 +667,20 @@ std::vector<std::string> Board::getPossibleMoves(bool color) {
     }
     return possibleMoves;
 }
-std::vector<std::string> Board::getPossibleMovesOfPiece(std::string tile) {
-    std::vector<std::string> possibleMoves;
-    for (Piece* piece : currentPieces){
-        if (piece->getPosition().compare(tile) == 0) {
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (piece->movePiece(std::to_string(i) + std::to_string(j))) {
-                        if (validateMove(piece, std::to_string(i) + std::to_string(j))) {
-                            possibleMoves.push_back(std::to_string(i) + std::to_string(j));
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return possibleMoves;
-}
+// std::vector<std::string> Board::getPossibleMovesOfPiece(std::string tile) {
+//     std::vector<std::string> possibleMoves;
+//     for (Piece* piece : currentPieces){
+//         if (piece->getPosition().compare(tile) == 0) {
+//             for (int i = 0; i < 8; i++) {
+//                 for (int j = 0; j < 8; j++) {
+//                     if (piece->movePiece(std::to_string(i) + std::to_string(j))) {
+//                         if (validateMove(piece, std::to_string(i) + std::to_string(j))) {
+//                             possibleMoves.push_back(std::to_string(i) + std::to_string(j));
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     return possibleMoves;
+// }

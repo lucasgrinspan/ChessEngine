@@ -17,7 +17,7 @@ char initBoard[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                            {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                            {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                             {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
 std::vector<std::string> moveList {"----"};
@@ -25,10 +25,8 @@ Board board(initBoard, moveList);
 
 void generatePossibleMoves(const v8::FunctionCallbackInfo<v8::Value>& args){
     v8::Isolate* isolate = args.GetIsolate();
-    v8::String::Utf8Value str(args[0]->ToString());
-    auto piece = (const char*)(*str);
 
-    std::vector<std::string> moves = board.getPossibleMovesOfPiece(piece);
+    std::vector<std::string> moves = board.getPossibleMoves(false);
     v8::Local<v8::Array> v8MoveList = v8::Array::New(isolate);
 
     for (unsigned int i = 0; i < moves.size(); i++) {
@@ -46,7 +44,7 @@ int main() {
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                                {'b', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
                                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
     std::vector<std::string> moves {"----"};

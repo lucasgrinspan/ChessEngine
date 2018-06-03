@@ -28,6 +28,20 @@ function generateCoordsFromTileNum(tileNumber) {
     x = String(tileNumber % 8);
     return y + x;
 }
+function getPossibleMoves(pieceCoords) {
+    var possibleMoves = Evaluator.generatePossibleMoves();
+    var possibleMovesForTile = [];
+    for (var i = 0; i < possibleMoves.length; i++) {
+        if (pieceCoords == possibleMoves[i].substring(0, 2)) {
+            possibleMovesForTile.push(possibleMoves[i].slice(2));
+        }
+    }
+    return possibleMovesForTile
+}
+//  Update the board in the C++ fiel
+function updateAddonBoard() {
+
+}
 //  Generate move list
 function logMove(previousSquare, currentSquare) {
     moveList.push(previousSquare + currentSquare);
@@ -81,7 +95,7 @@ function movePiece() {
         var currentTile = generateCoordsFromTileNum(parseInt(tile.id.slice(4)));
         logMove(previouseTile, currentTile);
         clearGreenCircles();
-        //generateBoard();
+        generateBoard();
     }
 }
 function selectPiece() {
@@ -91,8 +105,8 @@ function selectPiece() {
     if (event.stopPropagation) event.stopPropagation();
 
     //  Generates possible moves to display as an overlay on the board
-    tileNumber = generateCoordsFromTileNum(event.target.parentElement.id.slice(4));
-    var possibleTiles = Evaluator.generatePossibleMoves(tileNumber)
+    var pieceCoords = generateCoordsFromTileNum(event.target.parentElement.id.slice(4));
+    var possibleTiles = getPossibleMoves(pieceCoords);
     var greenCircleHTML = document.getElementById("green-circle-wrapper");
     for (var i = 0; i < possibleTiles.length; i++) {
         //  Convert from coordinates to tile number and creates the image

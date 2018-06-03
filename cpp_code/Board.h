@@ -10,7 +10,7 @@ class Board {
         std::vector<Piece*> getCurrentPieces();
         bool movePiece(std::string from, std::string to, bool = true, bool = true);
         std::vector<std::string> getPossibleMoves(bool color);
-        std::vector<std::string> getPossibleMovesOfPiece(std::string tile);
+        //std::vector<std::string> getPossibleMovesOfPiece(std::string tile);
         //  Debugging
         void printBoard();
         void printMoves();
