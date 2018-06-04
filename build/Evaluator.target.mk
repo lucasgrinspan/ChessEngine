@@ -100,7 +100,7 @@ INCS_Release := \
 OBJS := \
 	$(obj).target/$(TARGET)/cpp_code/main.o \
 	$(obj).target/$(TARGET)/cpp_code/Board.o \
-	$(obj).target/$(TARGET)/cpp_code/Evaluator.o \
+	$(obj).target/$(TARGET)/cpp_code/EvaluatorTree.o \
 	$(obj).target/$(TARGET)/cpp_code/Pieces/Bishop.o \
 	$(obj).target/$(TARGET)/cpp_code/Pieces/Blank.o \
 	$(obj).target/$(TARGET)/cpp_code/Pieces/King.o \

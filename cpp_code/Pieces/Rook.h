@@ -7,6 +7,7 @@ class Rook : public Piece {
         };
         ~Rook() {};
         bool movePiece(std::string to);
+        int getValue() {return 50;}
     private:
         std::vector<std::string> getAreasOfInfluence();
 };

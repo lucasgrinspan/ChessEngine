@@ -2,7 +2,7 @@
 #include<string>
 #include"Board.h"
 #include"Piece.h"
-#include"Evaluator.h"
+#include"EvaluatorTree.h"
 #include"Pieces/Pawn.h"
 #include"Pieces/Rook.h"
 #include"Pieces/Knight.h"
@@ -56,9 +56,12 @@ void updateBoard(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void getOpponentMove(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = args.GetIsolate();
 
+    EvaluatorTree evaluator(board);
+
     std::vector<std::string> moves = board.getPossibleMoves(true);
     int randomMove = rand() % moves.size(); 
     std::string nextMove = moves[randomMove];
+
     board.movePiece(nextMove.substr(0, 2), nextMove.substr(2), false, true);
 
     char *MoveCharArr = &nextMove[0u];
@@ -68,7 +71,7 @@ void getOpponentMove(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 }
 int main() {
-    char mainBoardArr[8][8] = {    {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+    char mainBoardArr[8][8] = {{'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
                             {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},

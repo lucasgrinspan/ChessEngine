@@ -7,6 +7,7 @@ class Blank : public Piece {
         };
         ~Blank() {};
         bool movePiece(std::string to);
+        int getValue() {return 0;}
     private:
         std::vector<std::string> getAreasOfInfluence();
 };

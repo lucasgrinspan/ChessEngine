@@ -7,6 +7,7 @@ class Queen : public Piece {
         };
         ~Queen() {};
         bool movePiece(std::string to);
+        int getValue() {return 90;}
     private:
         std::vector<std::string> getAreasOfInfluence();
 };

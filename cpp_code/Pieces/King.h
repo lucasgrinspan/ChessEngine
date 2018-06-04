@@ -7,6 +7,7 @@ class King : public Piece {
         };
         ~King() {};
         bool movePiece(std::string to);
+        int getValue() {return 1000;}
     private:
         std::vector<std::string> getAreasOfInfluence();
 };

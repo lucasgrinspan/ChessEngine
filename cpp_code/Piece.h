@@ -15,6 +15,7 @@ class Piece {
         bool withinBounds(int x, int y) {
             return (((x >= 0) && (x <= 7)) && ((y >= 0) && (y <= 7)));
         }
+        virtual int getValue() = 0;
         virtual bool movePiece(std::string to) = 0;
         virtual std::vector<std::string> getAreasOfInfluence() = 0;
     private:
