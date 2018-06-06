@@ -10,10 +10,11 @@ class EvaluatorTree {
     public:
         EvaluatorTree(Board& root);
         ~EvaluatorTree();
+        std::string returnMove();
     private:
         int evaluateState(Board& board);
-        Board& applyNewMove(Board& parent, std::string move);
-
+        Board* applyNewMove(char parentBoardState[8][8], std::vector<std::string> moveList, std::string move);
+        std::string selectedMove;
         const int SEARCH_DEPTH = 1;
 
         const int PAWN_WORTH   = 10;

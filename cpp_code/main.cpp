@@ -57,10 +57,10 @@ void getOpponentMove(const v8::FunctionCallbackInfo<v8::Value>& args) {
     v8::Isolate* isolate = args.GetIsolate();
 
     EvaluatorTree evaluator(board);
-
-    std::vector<std::string> moves = board.getPossibleMoves(true);
-    int randomMove = rand() % moves.size(); 
-    std::string nextMove = moves[randomMove];
+    std::string nextMove = evaluator.returnMove();
+    // std::vector<std::string> moves = board.getPossibleMoves(true);
+    // int randomMove = rand() % moves.size(); 
+    // std::string nextMove = moves[randomMove];
 
     board.movePiece(nextMove.substr(0, 2), nextMove.substr(2), false, true);
 

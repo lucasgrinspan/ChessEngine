@@ -24,7 +24,13 @@
         "limits": "cpp",
         "ratio": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "cctype": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp"
     },
     "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false
