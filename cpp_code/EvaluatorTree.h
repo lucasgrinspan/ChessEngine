@@ -12,17 +12,12 @@ class EvaluatorTree {
         ~EvaluatorTree();
         std::string returnMove();
     private:
+        int computeMinimax(int depth, Board& board, bool minimaxToggle);
         int evaluateState(Board& board);
         Board* applyNewMove(char parentBoardState[8][8], std::vector<std::string> moveList, std::string move);
+        
         std::string selectedMove;
-        const int SEARCH_DEPTH = 1;
-
-        const int PAWN_WORTH   = 10;
-        const int ROOK_WORTH   = 50;
-        const int KNIGHT_WORTH = 30;
-        const int BISHOP_WORTH = 30;
-        const int QUEEN_WORTH  = 90;
-        const int KING_WORTH   = 1000;
+        const int SEARCH_DEPTH = 3;
 
 };
 #endif

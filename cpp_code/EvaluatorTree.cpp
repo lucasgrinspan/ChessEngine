@@ -17,6 +17,32 @@ EvaluatorTree::EvaluatorTree(Board& root) {
         }
     }
 }
+int EvaluatorTree::computeMinimax(int depth, Board& board, bool minimaxToggle) {
+    if (depth == 0) {
+        return evaluateState(board);
+    }
+    std::vector<std::string> possibleMoves = board.getPossibleMoves(!minimaxToggle);
+    //  Search for max
+    if (minimaxToggle) {
+        int optimalMove = -1000000;
+        for (std::string move : possibleMoves) {
+            Board* newBoard = applyNewMove(board.boardState, board.getMoveList(), move);
+            int currentEvaluation = evaluateState(*newBoard);
+            optimalMove = std::max(optimalMove, computeMinimax(depth - 1, *newBoard, !minimaxToggle));
+            delete newBoard;
+        }
+        return optimalMove;
+    } else {
+        int optimalMove = 1000000;
+        for (std::string move : possibleMoves) {
+            Board* newBoard = applyNewMove(board.boardState, board.getMoveList(), move);
+            int currentEvaluation = evaluateState(*newBoard);
+            optimalMove = std::min(optimalMove, computeMinimax(depth - 1, *newBoard, !minimaxToggle));
+            delete newBoard;
+        }
+        return optimalMove;
+    }
+}
 EvaluatorTree::~EvaluatorTree() {}
 std::string EvaluatorTree::returnMove() {
     return selectedMove;
