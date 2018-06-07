@@ -67,8 +67,9 @@ void getOpponentMove(const v8::FunctionCallbackInfo<v8::Value>& args) {
     char *MoveCharArr = &nextMove[0u];
     auto v8MoveString = v8::String::NewFromUtf8(isolate, MoveCharArr);
 
-    args.GetReturnValue().Set(v8MoveString);
+    std::cout << nextMove << std::endl;
 
+    args.GetReturnValue().Set(v8MoveString);
 }
 int main() {
     char mainBoardArr[8][8] = {{'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 

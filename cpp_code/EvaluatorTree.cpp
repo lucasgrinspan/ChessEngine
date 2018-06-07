@@ -51,7 +51,7 @@ Board* EvaluatorTree::applyNewMove(char parentBoardState[8][8], std::vector<std:
     Board* child = new Board(parentBoardState, moveList);
     std::string from = move.substr(0, 2);
     std::string to = move.substr(2);
-    child->movePiece(from, to, true, false);
+    child->movePiece(from, to, false, true);
     return child;
 }
 int EvaluatorTree::evaluateState(Board& board) {
