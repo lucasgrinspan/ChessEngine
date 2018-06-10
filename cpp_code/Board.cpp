@@ -577,7 +577,7 @@ bool Board::movePiece(std::string from, std::string to, bool diagnostics, bool a
                 for (int i = 0; i < currentPieces.size(); i++) {
                     if (currentPieces[i]->getPosition().compare(enPassantTarget) == 0) {
                         delete currentPieces[i];
-                        currentPieces.erase(currentPieces.begin() + i + 1);
+                        currentPieces.erase(currentPieces.begin() + i);
                     }
                 }
                 boardState[enPassantTarget.at(0) - '0'][enPassantTarget.at(1) - '0'] = ' ';

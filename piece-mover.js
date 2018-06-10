@@ -85,7 +85,7 @@ function logMove(previousSquare, currentSquare) {
     generateBoard();
     moveList.push(previousSquare + currentSquare);
     console.log(previousSquare + currentSquare);
-    setTimeout(applyOpponentMove, 500);
+    setTimeout(applyOpponentMove, 100);
 }
 function getPieceList() {
     var pieceList = "";

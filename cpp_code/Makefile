@@ -2,11 +2,11 @@ FLAGS = -std=c++11 -Wall -c
 WARNINGS = -std=c++11 -Wall
 all: program
 
-program: main.o Board.o Pieces.o Evaluator.o
-	g++ -std=c++11 Main.o Board.o Evaluator.o Bishop.o King.o Knight.o Pawn.o Queen.o Rook.o Blank.o -o program
+program: test.o Board.o Pieces.o EvaluatorTree.o
+	g++ -std=c++11 test.o Board.o EvaluatorTree.o Bishop.o King.o Knight.o Pawn.o Queen.o Rook.o Blank.o -o program
 
-main.o: main.cpp
-	g++ $(FLAGS) main.cpp
+test.o: test.cpp
+	g++ $(FLAGS) test.cpp
 
 Board.o: Board.cpp
 	g++ $(FLAGS) Board.cpp
@@ -14,8 +14,8 @@ Board.o: Board.cpp
 Pieces.o: Pieces/Pawn.cpp Pieces/Rook.cpp Pieces/Bishop.cpp Pieces/Knight.cpp Pieces/Queen.cpp Pieces/King.cpp Pieces/Blank.cpp
 	g++ $(FLAGS) Pieces/Pawn.cpp Pieces/Rook.cpp Pieces/Bishop.cpp Pieces/Knight.cpp Pieces/Queen.cpp Pieces/King.cpp Pieces/Blank.cpp
 
-Evaluator.o: Evaluator.cpp
-	g++ $(FLAGS) Evaluator.cpp
+EvaluatorTree.o: EvaluatorTree.cpp
+	g++ $(FLAGS) EvaluatorTree.cpp
 
 clean:
 	rm -rf *o program
