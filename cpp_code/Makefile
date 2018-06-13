@@ -1,4 +1,5 @@
 FLAGS = -std=c++11 -Wall -c
+DEBUG = -g
 WARNINGS = -std=c++11 -Wall
 all: program
 

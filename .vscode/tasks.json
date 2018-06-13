@@ -2,7 +2,24 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
+    "command": "sh",
+    "options": {
+        "cwd": "${workspaceRoot}/cpp_code"
+    },
+    "suppressTaskName": true,
     "tasks": [
+        {
+            "label": "build debug",
+            "type": "shell",
+            "command": "cd cpp_code/ && make debug",
+            
+        },
+        {
+            "label": "build program",
+            "type": "shell",
+            "command": "cd cpp_code/ && make all",
+            
+        },
         {
             "type": "npm",
             "script": "install",

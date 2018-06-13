@@ -431,16 +431,31 @@ bool Board::getMoveInCheck(int checkCount, bool color, Piece* selectedPiece, std
     return true;
 }
 bool Board::inCheck(std::string square, bool color) {
+    //  Create temporary piece
+    Piece* placeholder = new Blank(square, !color);
+    currentPieces.push_back(placeholder);
+
     for (Piece* piece : currentPieces) {
-        //  Get only one side
         if (color == piece->getColor()) {
-            if (piece->movePiece(square)) {
-                if (validateMove(piece, square)) {
-                    return true;
-                }
+            if (movePiece(piece->getPosition(), square, false, false)) {
+                currentPieces.pop_back();
+                delete placeholder;
+                return true;
             }
         }
     }
+    currentPieces.pop_back();
+    delete placeholder;
+    // for (Piece* piece : currentPieces) {
+    //     //  Get only one side
+    //     if (color == piece->getColor()) {
+    //         if (piece->movePiece(square)) {
+    //             if (validateMove(piece, square)) {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    // }
 
     return false;
 }

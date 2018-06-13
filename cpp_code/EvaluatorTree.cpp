@@ -69,7 +69,6 @@ Board* EvaluatorTree::applyNewMove(char parentBoardState[8][8], std::vector<std:
 int EvaluatorTree::evaluateState(Board& board) {
     int evaluation = 0;
     std::vector<Piece*> currentPieces = board.getCurrentPieces();
-    int i = 0;
     for (Piece* piece : currentPieces) {
         //  Substract if black piece and add if white piece
         int modifier = piece->getColor() ? -1 : 1;

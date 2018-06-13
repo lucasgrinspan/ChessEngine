@@ -11,21 +11,24 @@
 #include"Pieces/King.h"
 #include"Pieces/Blank.h"
 int main() {
-    char mainBoardArr[8][8] = {{'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}, 
+    char mainBoardArr[8][8] = {{'R', 'N', 'B', 'Q', ' ', 'B', 'N', 'R'}, 
                             {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
                             {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                            {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                            {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                            {' ', ' ', ' ', ' ', 'K', ' ', ' ', ' '},
+                            {' ', ' ', ' ', ' ', 'p', ' ', ' ', ' '},
+                            {'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p'},
                             {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'} };
 
     std::vector<std::string> moves {"----"};
     Board mainBoard(mainBoardArr, moves);
+    mainBoard.movePiece("54", "44");
+    mainBoard.printBoard();
+
     std::vector<std::string> presetMoves{"6444", "7655", "7152", "6757", "6343", "7236", "3645", "4435", "3524"};
     //std::vector<std::string> possibleMoves = board.getPossibleMoves(false);
     //Evaluator evaluator(possibleMoves);
-    bool playing = true;
+    bool playing = false;
     bool usePresets = true;
     int moveCounter = 0;
     while (playing) {
