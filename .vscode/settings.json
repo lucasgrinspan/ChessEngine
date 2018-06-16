@@ -31,7 +31,8 @@
         "cstdlib": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "array": "cpp"
     },
     "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false

@@ -1,21 +1,26 @@
 #include"Board.h"
-#include<vector>
+#include<array>
 #include<string>
 #include<iostream>
 
 int main() {
-    std::vector<std::string> pieces   {"r00", "n01", "b02", "q03", "k04", "b05", "n06", "r07",
-                                       "p10", "p11", "p12", "p13", "p14", "p15", "p16", "p17",
-
-
-
-
-                                       "P60", "P61", "P62", "P63", "P64", "P65", "P66", "P67",
-                                       "R70", "N71", "B72", "Q73", "K74", "B75", "N76", "R77"};
+    std::array<char, 64> pieces{'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
+                                'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', 'R', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
+                                'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'};
     
-    std::vector<bool> movedPieces     {false, false, false, false, false, false};
+    std::array<bool, 6> movedPieces {false, false, false, false, false, false};
+    std::string lastMove = "----";
+    Board board(pieces, movedPieces, lastMove);
 
-    Board board(pieces, movedPieces);
-
+    std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves();
+    for (int i = 0; i < possibleMoves[35].size(); i++) {
+        std::cout << possibleMoves[35][i] << std::endl;
+    }
     board.printBoard();
+    //board.movePiece(0, 1, 0);
 }

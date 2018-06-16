@@ -1,23 +1,36 @@
 #ifndef BOARD_H
 #define BOARD_H
-#include<vector>
+#include<array>
 #include<string>
+#include<vector>
 class Board {
     public:
-        Board(std::vector<std::string> pieces, std::vector<bool> movedPieces);
+        Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove);
         void printBoard();
+
+        bool movePiece(int tileNum0, int tileNum1, int promotionCase);
+        std::array<std::vector<int>, 64> getPossibleMoves();
     private:
         const int PIECE_ICON = 0;
-        const int Y_COORD = 1;
-        const int X_COORD = 2;
+        const int POSITION = 1;
         const int BOARD_LENGTH = 8;
+        const int NUM_TILES = 64;
 
-        std::vector<std::string> m_piecesList;
-        std::vector<bool> m_movedPiecesList;
+        std::array<char, 64> m_board;
+        std::array<bool, 6> m_movedPiecesList;
+        std::string m_lastMove;
 
-        int getYCoord(std::string piece);
-        int getXCoord(std::string piece);
-        char getIcon(std::string piece);
+        int getYCoord(int tileNumber);
+        int getXCoord(int tileNumber);
+        int getTileNumber(int x, int y);
+        bool isWhite(char piece);
 
+        std::string getPiece(int tileNum);
+
+        std::vector<int> getPawnMoves(int x, int y);
+        std::vector<int> getKnightMoves(int x, int y);
+        std::vector<int> getBishopMoves(int x, int y);
+        std::vector<int> getQueenMoves(int x, int y);
+        std::vector<int> getKingMoves(int x, int y);
 };
 #endif
