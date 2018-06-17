@@ -8,7 +8,7 @@ int main() {
                                 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                ' ', ' ', ' ', 'R', ' ', ' ', ' ', ' ',
+                                'B', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
                                 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'};
@@ -18,8 +18,8 @@ int main() {
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves();
-    for (int i = 0; i < possibleMoves[35].size(); i++) {
-        std::cout << possibleMoves[35][i] << std::endl;
+    for (int i = 0; i < possibleMoves[32].size(); i++) {
+        std::cout << possibleMoves[32][i] << std::endl;
     }
     board.printBoard();
     //board.movePiece(0, 1, 0);

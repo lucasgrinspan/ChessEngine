@@ -15,6 +15,8 @@ class Board {
         const int POSITION = 1;
         const int BOARD_LENGTH = 8;
         const int NUM_TILES = 64;
+        const int KING_RANGE = 2;
+        const int MAX_RANGE = 8;
 
         std::array<char, 64> m_board;
         std::array<bool, 6> m_movedPiecesList;
@@ -28,6 +30,8 @@ class Board {
         std::string getPiece(int tileNum);
 
         std::vector<int> getPawnMoves(int x, int y);
+        std::vector<int> getStraightLineMoves(int tileNumber, bool color, int length);
+        std::vector<int> getDiagonalMoves(int tileNumber, bool color, int length);
         std::vector<int> getKnightMoves(int x, int y);
         std::vector<int> getBishopMoves(int x, int y);
         std::vector<int> getQueenMoves(int x, int y);

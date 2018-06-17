@@ -41,6 +41,138 @@ void Board::printBoard() {
     }
     std::cout << std::endl;
 }
+std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range) {
+    std::vector<int> possibleMoves;
+    //  Handle limits in horizontal direction
+    int limitRight = BOARD_LENGTH - getXCoord(tileNumber);
+    int limitLeft = getXCoord(tileNumber) + 1;
+    int limitUp = getYCoord(tileNumber) + 1;
+    int limitDown = BOARD_LENGTH - getYCoord(tileNumber);
+
+    //  Iterate over squares to the right
+    for (int j = 1; j < std::min(limitRight, range); j++) {
+        int tile = tileNumber + j;
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate over squares to the left
+    for (int j = 1; j < std::min(limitLeft, range); j++) {
+        int tile = tileNumber - j;
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate over squares above
+    for (int j = 1; j < std::min(limitUp, range); j++) {
+        int tile = tileNumber - (j * 8);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate over squares below
+    for (int j = 1; j < std::min(limitDown, range); j++) {
+        int tile = tileNumber + (j * 8);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    return possibleMoves;
+}
+std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) {
+    std::vector<int> possibleMoves;
+    int distanceRight = BOARD_LENGTH - getXCoord(tileNumber);
+    int distanceLeft = getXCoord(tileNumber) + 1;
+    int distanceUp = getYCoord(tileNumber) + 1;
+    int distanceDown = BOARD_LENGTH - getYCoord(tileNumber);
+
+    int limitUpRight = std::min(distanceRight, distanceUp);
+    int limitUpLeft = std::min(distanceLeft, distanceUp);
+    int limitDownRight = std::min(distanceDown, distanceRight);
+    int limitDownLeft = std::min(distanceDown, distanceLeft);
+
+    //  Iterate diagonal up right
+    for (int j = 1; j < std::min(limitUpRight, range); j++) {
+        //  Subtracting 7 gives you the tile up and to the right
+        int tile = tileNumber - (7 * j);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate diagonal up left
+    for (int j = 1; j < std::min(limitUpLeft, range); j++) {
+        //  Subtracting 9 gives you the tile up and to the left
+        int tile = tileNumber - (7 * j);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate diagonal down right
+    for (int j = 1; j < std::min(limitDownRight, range); j++) {
+        //  Adding 9 gives you the tile down and to the right
+        int tile = tileNumber + (9 * j);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    //  Iterate diagonal up right
+    for (int j = 1; j < std::min(limitDownLeft, range); j++) {
+        //  Adding 7 gives you the tile up and to the right
+        int tile = tileNumber + (7 * j);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            continue;
+        } else if (isWhite(m_board[tile]) != color) {
+            possibleMoves.push_back(tile);
+            break;
+        } else {
+            break;
+        }
+    }
+    return possibleMoves;
+}
 std::array<std::vector<int>, 64> Board::getPossibleMoves() {
     std::array<std::vector<int>, 64> possibleMoves;
     for (int i = 0; i < NUM_TILES; i++) {
@@ -51,71 +183,27 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves() {
         bool color = isWhite(m_board[i]);
         switch (piece) {
             case 'r': {
-                //  Handle limits in horizontal direction
-                int limitRight = BOARD_LENGTH - getXCoord(position);
-                int limitLeft = getXCoord(position) + 1;
-                int limitUp = getYCoord(position) + 1;
-                int limitDown = BOARD_LENGTH - getYCoord(position);
-
-                //  Iterate over squares to the right
-                for (int j = 1; j < limitRight; j++) {
-                    int tile = position + j;
-                    if (m_board[tile] == ' ') {
-                        possibleMoves[position].push_back(tile);
-                        continue;
-                    } else if (isWhite(m_board[tile]) != color) {
-                        possibleMoves[position].push_back(tile);
-                    } else {
-                        break;
-                    }
-                }
-                //  Iterate over squares to the left
-                for (int j = 1; j < limitLeft; j++) {
-                    int tile = position - j;
-                    if (m_board[tile] == ' ') {
-                        possibleMoves[position].push_back(tile);
-                        continue;
-                    } else if (isWhite(m_board[tile]) != color) {
-                        possibleMoves[position].push_back(tile);
-                    } else {
-                        break;
-                    }
-                }
-                //  Iterate over squares above
-                for (int j = 1; j < limitUp; j++) {
-                    int tile = position - (j * 8);
-                    if (m_board[tile] == ' ') {
-                        possibleMoves[position].push_back(tile);
-                        continue;
-                    } else if (isWhite(m_board[tile]) != color) {
-                        possibleMoves[position].push_back(tile);
-                    } else {
-                        break;
-                    }
-                }
-                //  Iterate over squares below
-                for (int j = 1; j < limitUp; j++) {
-                    int tile = position + (j * 8);
-                    if (m_board[tile] == ' ') {
-                        possibleMoves[position].push_back(tile);
-                        continue;
-                    } else if (isWhite(m_board[tile]) != color) {
-                        possibleMoves[position].push_back(tile);
-                    } else {
-                        break;
-                    }
-                }
+                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE);
                 break; 
             }      
             case 'q': {
+                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE);
+                //  Insert diagonal moves
+                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE);
+                possibleMoves[position].insert(possibleMoves[position].end(), 
+                                               diagonalMoves.begin(), 
+                                               diagonalMoves.end());
                 break;
             }
             case 'k': {
+                possibleMoves[position] = getStraightLineMoves(position, color, KING_RANGE);
+
                 break;
             }
             case 'n': {
             }
             case 'b': {
+                possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE);
             }
         }
     }
