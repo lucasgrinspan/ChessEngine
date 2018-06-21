@@ -32,6 +32,10 @@ bool Board::isWhite(char piece) {
     //  Returns true if piece is white
     return std::islower(piece);
 }
+bool Board::withinBounds(int x, int y) {
+    //  Checks if x and y are in the 8x8 board
+    return (x >= 0) && (x <= 7) && (y >= 0) && (y <= 7);
+}
 void Board::printBoard() {
     for (int i = 0; i < NUM_TILES; i++) {
         if (i % 8 == 0) {
@@ -173,6 +177,55 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
     }
     return possibleMoves;
 }
+std::vector<int> Board::getKnightMoves(int tileNumber, bool color) {
+    
+    std::vector<int> possibleMoves;
+    
+    int x = getXCoord(tileNumber);
+    int y = getYCoord(tileNumber);
+
+    //  Set up the x, y offsets for the knight
+    std::array<int, 16> knightOffsets {x - 1, y - 2, x - 1, y + 2, 
+                                       x + 1, y - 2, x + 1, y + 2, 
+                                       x - 2, y - 1, x - 2, y + 1, 
+                                       x + 2, y - 1, x + 2, y + 1};
+    //  Go through each possible move in the knight and check
+    for (int i = 0; i < knightOffsets.size(); i++) {
+        int x1 = knightOffsets[i];
+        int y1 = knightOffsets[++i];
+        if (withinBounds(x1, y1)) {
+            int tile = getTileNumber(x1, y1);
+            if (m_board[tile] == ' ') {
+                possibleMoves.push_back(tile);
+            }
+            if (isWhite(m_board[tile]) != color) {
+                possibleMoves.push_back(tile);
+            }
+        }
+    }
+    return possibleMoves;
+}
+std::vector<int> Board::getPawnMoves(int tileNumber, bool color) {
+    std::vector<int> possibleMoves;
+
+    int modifier = color ? -1 : 1;
+    int startingRow = color ? 6 : 1;
+
+    int tile = tileNumber + (modifier * 8);
+    if (m_board[tile] == ' ') {
+        possibleMoves.push_back(tile);
+        
+        //  Check if the pawn is on the second row
+        //  so that it can start with a double move forward
+        int tile = tileNumber + (modifier * 16);
+        if (getYCoord(tileNumber) == startingRow) {
+            if (m_board[tile] == ' ') {
+                possibleMoves.push_back(tile);
+            }
+        }
+    }
+    return possibleMoves;
+}
 std::array<std::vector<int>, 64> Board::getPossibleMoves() {
     std::array<std::vector<int>, 64> possibleMoves;
     for (int i = 0; i < NUM_TILES; i++) {
@@ -197,13 +250,29 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves() {
             }
             case 'k': {
                 possibleMoves[position] = getStraightLineMoves(position, color, KING_RANGE);
-
+                //  Insert diagonal moves
+                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE);
+                possibleMoves[position].insert(possibleMoves[position].end(), 
+                                               diagonalMoves.begin(), 
+                                               diagonalMoves.end());
                 break;
             }
             case 'n': {
+                
+                possibleMoves[position] = getKnightMoves(position, color);
+                break;
             }
             case 'b': {
                 possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE);
+                break;
+            }
+            case 'p': {
+                possibleMoves[position] = getPawnMoves(position, color);
+                break;
+            }
+            default: {
+                Log("ERROR: invalid piece icon found: " << piece);
+                return possibleMoves;
             }
         }
     }
