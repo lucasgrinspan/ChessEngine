@@ -52,7 +52,7 @@ void Board::printBoard() {
     }
     std::cout << std::endl;
 }
-std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range) {
+std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range, bool influence) {
     std::vector<int> possibleMoves;
     //  Handle limits in horizontal direction
     int limitRight = BOARD_LENGTH - getXCoord(tileNumber);
@@ -70,6 +70,9 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
@@ -83,6 +86,9 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
@@ -96,6 +102,9 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
@@ -109,12 +118,15 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
     return possibleMoves;
 }
-std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) {
+std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range, bool influence) {
     std::vector<int> possibleMoves;
     int distanceRight = BOARD_LENGTH - getXCoord(tileNumber);
     int distanceLeft = getXCoord(tileNumber) + 1;
@@ -137,13 +149,16 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
     //  Iterate diagonal up left
     for (int j = 1; j < std::min(limitUpLeft, range); j++) {
         //  Subtracting 9 gives you the tile up and to the left
-        int tile = tileNumber - (7 * j);
+        int tile = tileNumber - (9 * j);
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
@@ -151,6 +166,9 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
@@ -165,6 +183,9 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
@@ -179,12 +200,15 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
             possibleMoves.push_back(tile);
             break;
         } else {
+            if (influence) {
+                possibleMoves.push_back(tile);
+            }
             break;
         }
     }
     return possibleMoves;
 }
-std::vector<int> Board::getKnightMoves(int tileNumber, bool color) {
+std::vector<int> Board::getKnightMoves(int tileNumber, bool color, bool influence) {
     
     std::vector<int> possibleMoves;
     
@@ -206,28 +230,33 @@ std::vector<int> Board::getKnightMoves(int tileNumber, bool color) {
                 possibleMoves.push_back(tile);
             } else if (isOpponentPiece(m_board[tile], color)) {
                 possibleMoves.push_back(tile);
+            } else if (influence) {
+                possibleMoves.push_back(tile);
             }
         }
     }
     return possibleMoves;
 }
-std::vector<int> Board::getPawnMoves(int tileNumber, bool color) {
+std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence) {
     std::vector<int> possibleMoves;
 
     int modifier = color ? -1 : 1;
     int startingRow = color ? 6 : 1;
     int x = getXCoord(tileNumber);
+    int y = getYCoord(tileNumber);
 
-    int tile = tileNumber + (modifier * 8);
-    if (m_board[tile] == ' ') {
-        possibleMoves.push_back(tile);
-        
-        //  Check if the pawn is on the second row
-        //  so that it can start with a double move forward
-        int tile = tileNumber + (modifier * 16);
-        if (getYCoord(tileNumber) == startingRow) {
-            if (m_board[tile] == ' ') {
-                possibleMoves.push_back(tile);
+    if (!influence) {
+        int tile = tileNumber + (modifier * 8);
+        if (m_board[tile] == ' ') {
+            possibleMoves.push_back(tile);
+            
+            //  Check if the pawn is on the second row
+            //  so that it can start with a double move forward
+            int tile = tileNumber + (modifier * 16);
+            if (getYCoord(tileNumber) == startingRow) {
+                if (m_board[tile] == ' ') {
+                    possibleMoves.push_back(tile);
+                }
             }
         }
     }
@@ -235,45 +264,127 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color) {
     if (x != 0) {
         //  Get tile to the left diagonal
         int tile = tileNumber + (modifier * 8) - 1;
-        if (isOpponentPiece(m_board[tile], color)) {
+        if (isOpponentPiece(m_board[tile], color) || influence) {
             possibleMoves.push_back(tile);
         }
     }
     if (x != 7) {
         //  Get tile to the right diagonal
         int tile = tileNumber + (modifier * 8) + 1;
-        if (isOpponentPiece(m_board[tile], color)) {
+        if (isOpponentPiece(m_board[tile], color) || influence) {
             possibleMoves.push_back(tile);
         }
     }
+    //  Check for en passant
+    int enPassantColumn = color ? 3 : 4;
+    if (y == enPassantColumn) {
+        //TODO: check last move and apply rule
+    }
     return possibleMoves;
 }
-std::array<std::vector<int>, 64> Board::getPossibleMoves() {
+std::array<bool, 64> Board::getAttackedSquares(bool color) {
+    //  Get the squares attacked by the color in the parameter
+    std::array<bool, 64> attackedSquares;
+    attackedSquares.fill(false);
+    
+    for (int i = 0; i < NUM_TILES; i++) {
+        if (!isOpponentPiece(m_board[i], color)) {
+            char piece = std::tolower(m_board[i]);
+            int position = i;
+            switch (piece) {
+                case 'r': {
+                    //  Get the squares that the rook attacks and set it to true in bitboard
+                    std::vector<int> attackingSquares = getStraightLineMoves(i, color, MAX_RANGE, INFLUENCE);
+                    for (int square : attackingSquares) {
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+                case 'q': {
+                    std::vector<int> attackingSquares = getStraightLineMoves(position, color, MAX_RANGE, INFLUENCE);
+                    //  Insert diagonal moves
+                    std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE, INFLUENCE);
+                    attackingSquares.insert(attackingSquares.end(), 
+                                               diagonalMoves.begin(), 
+                                               diagonalMoves.end());
+                    for (int square : attackingSquares) {
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+                case 'k': {
+                    std::vector<int> attackingSquares = getStraightLineMoves(position, color, KING_RANGE, INFLUENCE);
+                    //  Insert diagonal moves
+                    std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE, INFLUENCE);
+                    attackingSquares.insert(attackingSquares.end(), 
+                                                diagonalMoves.begin(), 
+                                                diagonalMoves.end());
+                    for (int square : attackingSquares) {
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+                case 'n': {
+                    std::vector<int> attackingSquares = getKnightMoves(position, color, INFLUENCE);
+                    for (int square : attackingSquares) {
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+                case 'b': {
+                    std::vector<int> attackingSquares = getDiagonalMoves(position, color, MAX_RANGE, INFLUENCE);
+                    for (int square : attackingSquares) {
+                        std::cout << square << std::endl;
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+                case 'p': {
+                    std::vector<int> attackingSquares = getPawnMoves(position, color, INFLUENCE);
+                    for (int square : attackingSquares) {
+                        attackedSquares[square] = true;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    //  Print attacking squares
+    for (int i = 0; i < NUM_TILES; i++) {
+        if (i % 8 == 0) {
+            std::cout << std::endl;
+        }
+        std::cout << attackedSquares[i] << " ";
+    }
+    std::cout << std::endl;
+
+    return attackedSquares;
+}
+std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
-
+        if (isOpponentPiece(m_board[i], color)) {continue;}
         int position = i;
         char piece = std::tolower(m_board[i]);
-        bool color = isWhite(m_board[i]);
         switch (piece) {
             case 'r': {
-                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE);
+                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 break; 
             }      
             case 'q': {
-                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE);
+                possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 //  Insert diagonal moves
-                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE);
+                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
                 possibleMoves[position].insert(possibleMoves[position].end(), 
                                                diagonalMoves.begin(), 
                                                diagonalMoves.end());
                 break;
             }
             case 'k': {
-                possibleMoves[position] = getStraightLineMoves(position, color, KING_RANGE);
+                possibleMoves[position] = getStraightLineMoves(position, color, KING_RANGE, MOVEMENT);
                 //  Insert diagonal moves
-                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE);
+                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE, MOVEMENT);
                 possibleMoves[position].insert(possibleMoves[position].end(), 
                                                diagonalMoves.begin(), 
                                                diagonalMoves.end());
@@ -281,15 +392,15 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves() {
             }
             case 'n': {
                 
-                possibleMoves[position] = getKnightMoves(position, color);
+                possibleMoves[position] = getKnightMoves(position, color, MOVEMENT);
                 break;
             }
             case 'b': {
-                possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE);
+                possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
                 break;
             }
             case 'p': {
-                possibleMoves[position] = getPawnMoves(position, color);
+                possibleMoves[position] = getPawnMoves(position, color, MOVEMENT);
                 break;
             }
             default: {

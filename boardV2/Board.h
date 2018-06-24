@@ -9,7 +9,8 @@ class Board {
         void printBoard();
 
         bool movePiece(int tileNum0, int tileNum1, int promotionCase);
-        std::array<std::vector<int>, 64> getPossibleMoves();
+        std::array<std::vector<int>, 64> getPossibleMoves(bool color);
+        std::array<bool, 64> getAttackedSquares(bool color);
     private:
         const int PIECE_ICON = 0;
         const int POSITION = 1;
@@ -18,6 +19,8 @@ class Board {
         const int KING_RANGE = 2;
         const int MAX_RANGE = 8;
         const int NUM_KNIGHT_MOVES = 8;
+        const int MOVEMENT = false;
+        const int INFLUENCE = true;
 
         std::array<char, 64> m_board;
         std::array<bool, 6> m_movedPiecesList;
@@ -32,9 +35,10 @@ class Board {
 
         std::string getPiece(int tileNum);
 
-        std::vector<int> getStraightLineMoves(int tileNumber, bool color, int length);
-        std::vector<int> getDiagonalMoves(int tileNumber, bool color, int length);
-        std::vector<int> getKnightMoves(int tileNumber, bool color);
-        std::vector<int> getPawnMoves(int tileNumber, bool color);
+        std::vector<int> getStraightLineMoves(int tileNumber, bool color, int length, bool influence);
+        std::vector<int> getDiagonalMoves(int tileNumber, bool color, int length, bool influence);
+        std::vector<int> getKnightMoves(int tileNumber, bool color, bool influence);
+        std::vector<int> getPawnMoves(int tileNumber, bool color, bool influence);
+
 };
 #endif
