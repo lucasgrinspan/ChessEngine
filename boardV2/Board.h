@@ -27,6 +27,7 @@ class Board {
         int getXCoord(int tileNumber);
         int getTileNumber(int x, int y);
         bool isWhite(char piece);
+        bool isOpponentPiece(char piece, bool color);
         bool withinBounds(int x, int y);
 
         std::string getPiece(int tileNum);

@@ -18,7 +18,7 @@ int main() {
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves();
-    int piece = 8;
+    int piece = 18;
     for (int i = 0; i < possibleMoves[piece].size(); i++) {
         std::cout << possibleMoves[piece][i] << std::endl;
     }

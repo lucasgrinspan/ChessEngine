@@ -32,6 +32,13 @@ bool Board::isWhite(char piece) {
     //  Returns true if piece is white
     return std::islower(piece);
 }
+bool Board::isOpponentPiece(char piece, bool color) {
+    if (piece == ' ') {
+        return false;
+    } else {
+        return std::islower(piece) != color;
+    }
+}
 bool Board::withinBounds(int x, int y) {
     //  Checks if x and y are in the 8x8 board
     return (x >= 0) && (x <= 7) && (y >= 0) && (y <= 7);
@@ -59,7 +66,7 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -72,7 +79,7 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -85,7 +92,7 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -98,7 +105,7 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -126,7 +133,7 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -140,7 +147,7 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -154,7 +161,7 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -168,7 +175,7 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range) 
         if (m_board[tile] == ' ') {
             possibleMoves.push_back(tile);
             continue;
-        } else if (isWhite(m_board[tile]) != color) {
+        } else if (isOpponentPiece(m_board[tile], color)) {
             possibleMoves.push_back(tile);
             break;
         } else {
@@ -197,8 +204,7 @@ std::vector<int> Board::getKnightMoves(int tileNumber, bool color) {
             int tile = getTileNumber(x1, y1);
             if (m_board[tile] == ' ') {
                 possibleMoves.push_back(tile);
-            }
-            if (isWhite(m_board[tile]) != color) {
+            } else if (isOpponentPiece(m_board[tile], color)) {
                 possibleMoves.push_back(tile);
             }
         }
@@ -210,6 +216,7 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color) {
 
     int modifier = color ? -1 : 1;
     int startingRow = color ? 6 : 1;
+    int x = getXCoord(tileNumber);
 
     int tile = tileNumber + (modifier * 8);
     if (m_board[tile] == ' ') {
@@ -222,6 +229,21 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color) {
             if (m_board[tile] == ' ') {
                 possibleMoves.push_back(tile);
             }
+        }
+    }
+    //  Check for diagonal capture moves
+    if (x != 0) {
+        //  Get tile to the left diagonal
+        int tile = tileNumber + (modifier * 8) - 1;
+        if (isOpponentPiece(m_board[tile], color)) {
+            possibleMoves.push_back(tile);
+        }
+    }
+    if (x != 7) {
+        //  Get tile to the right diagonal
+        int tile = tileNumber + (modifier * 8) + 1;
+        if (isOpponentPiece(m_board[tile], color)) {
+            possibleMoves.push_back(tile);
         }
     }
     return possibleMoves;
