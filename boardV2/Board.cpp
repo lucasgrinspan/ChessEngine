@@ -299,13 +299,19 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
             //  Filter out squares out of bounds
             if (withinBounds(x + i, y + j)) {
                 //  Filter out the king square
-                if ((i != 0) && (j != 0)) {
-
+                if ((i != 0) || (j != 0)) {
                     int tile = getTileNumber(x + i, y + j);
-                    if (m_board[tile] == ' ') {
+                    if (influence) {
                         possibleMoves.push_back(tile);
-                    } else if (isOpponentPiece(m_board[tile], color)) {
-
+                    } else {
+                        //  Check if the tile is in check
+                        if (!isInCheck(tile)) {
+                            if (m_board[tile] == ' ') {
+                                possibleMoves.push_back(tile);
+                            } else if (isOpponentPiece(m_board[tile], color)) {
+                                possibleMoves.push_back(tile);
+                            }
+                        }
                     }
                 }
             }
@@ -344,12 +350,7 @@ void Board::generateAttackedSquares(bool color) {
                     break;
                 }
                 case 'k': {
-                    std::vector<int> attackingSquares = getStraightLineMoves(position, color, KING_RANGE, INFLUENCE);
-                    //  Insert diagonal moves
-                    std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE, INFLUENCE);
-                    attackingSquares.insert(attackingSquares.end(), 
-                                                diagonalMoves.begin(), 
-                                                diagonalMoves.end());
+                    std::vector<int> attackingSquares = getKingMoves(position, color, INFLUENCE);
                     for (int square : attackingSquares) {
                         attackedSquares[square] = true;
                     }
@@ -414,12 +415,7 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
                 break;
             }
             case 'k': {
-                possibleMoves[position] = getStraightLineMoves(position, color, KING_RANGE, MOVEMENT);
-                //  Insert diagonal moves
-                std::vector<int> diagonalMoves = getDiagonalMoves(position, color, KING_RANGE, MOVEMENT);
-                possibleMoves[position].insert(possibleMoves[position].end(), 
-                                               diagonalMoves.begin(), 
-                                               diagonalMoves.end());
+                possibleMoves[position] = getKingMoves(position, color, MOVEMENT);
                 break;
             }
             case 'n': {

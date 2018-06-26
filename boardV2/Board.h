@@ -10,6 +10,10 @@ class Board {
 
         bool movePiece(int tileNum0, int tileNum1, int promotionCase);
         std::array<std::vector<int>, 64> getPossibleMoves(bool color);
+        
+        int getYCoord(int tileNumber);
+        int getXCoord(int tileNumber);
+        int getTileNumber(int x, int y);
     private:
         const int PIECE_ICON = 0;
         const int POSITION = 1;
@@ -26,9 +30,6 @@ class Board {
         std::array<bool, 6> m_movedPiecesList;
         std::string m_lastMove;
 
-        int getYCoord(int tileNumber);
-        int getXCoord(int tileNumber);
-        int getTileNumber(int x, int y);
         bool isWhite(char piece);
         bool isOpponentPiece(char piece, bool color);
         bool withinBounds(int x, int y);
