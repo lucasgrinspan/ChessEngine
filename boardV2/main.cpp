@@ -17,7 +17,7 @@ int main() {
     std::string lastMove = "----";
     Board board(pieces, movedPieces, lastMove);
 
-    board.getAttackedSquares(true);
+    //board.getAttackedSquares(true);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(true);
     int piece = 18;

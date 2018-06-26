@@ -18,6 +18,8 @@ Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::
     m_board = pieces;
     m_movedPiecesList = movedPieces;
     m_lastMove = lastMove;
+    //  White has first move
+    generateAttackedSquares(false);
 }
 int Board::getYCoord(int tileNumber) {
     return tileNumber / 8;
@@ -43,6 +45,9 @@ bool Board::withinBounds(int x, int y) {
     //  Checks if x and y are in the 8x8 board
     return (x >= 0) && (x <= 7) && (y >= 0) && (y <= 7);
 }
+bool Board::isInCheck(int tileNumber) {
+    return m_attackedSquares[tileNumber];
+}
 void Board::printBoard() {
     for (int i = 0; i < NUM_TILES; i++) {
         if (i % 8 == 0) {
@@ -53,6 +58,7 @@ void Board::printBoard() {
     std::cout << std::endl;
 }
 std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range, bool influence) {
+
     std::vector<int> possibleMoves;
     //  Handle limits in horizontal direction
     int limitRight = BOARD_LENGTH - getXCoord(tileNumber);
@@ -282,7 +288,32 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
     }
     return possibleMoves;
 }
-std::array<bool, 64> Board::getAttackedSquares(bool color) {
+std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence) {
+    std::vector<int> possibleMoves;
+
+    int x = getXCoord(tileNumber);
+    int y = getYCoord(tileNumber);
+
+    for (int i = -1; i < 2; i++) {
+        for (int j = -1; j < 2; j++) {
+            //  Filter out squares out of bounds
+            if (withinBounds(x + i, y + j)) {
+                //  Filter out the king square
+                if ((i != 0) && (j != 0)) {
+
+                    int tile = getTileNumber(x + i, y + j);
+                    if (m_board[tile] == ' ') {
+                        possibleMoves.push_back(tile);
+                    } else if (isOpponentPiece(m_board[tile], color)) {
+
+                    }
+                }
+            }
+        }
+    }
+    return possibleMoves;
+}
+void Board::generateAttackedSquares(bool color) {
     //  Get the squares attacked by the color in the parameter
     std::array<bool, 64> attackedSquares;
     attackedSquares.fill(false);
@@ -334,7 +365,6 @@ std::array<bool, 64> Board::getAttackedSquares(bool color) {
                 case 'b': {
                     std::vector<int> attackingSquares = getDiagonalMoves(position, color, MAX_RANGE, INFLUENCE);
                     for (int square : attackingSquares) {
-                        std::cout << square << std::endl;
                         attackedSquares[square] = true;
                     }
                     break;
@@ -350,21 +380,23 @@ std::array<bool, 64> Board::getAttackedSquares(bool color) {
         }
     }
     //  Print attacking squares
-    for (int i = 0; i < NUM_TILES; i++) {
-        if (i % 8 == 0) {
-            std::cout << std::endl;
-        }
-        std::cout << attackedSquares[i] << " ";
-    }
-    std::cout << std::endl;
+    // for (int i = 0; i < NUM_TILES; i++) {
+    //     if (i % 8 == 0) {
+    //         std::cout << std::endl;
+    //     }
+    //     std::cout << attackedSquares[i] << " ";
+    // }
+    // std::cout << std::endl;
 
-    return attackedSquares;
+    m_attackedSquares = attackedSquares;
 }
 std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
+    
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
+
         int position = i;
         char piece = std::tolower(m_board[i]);
         switch (piece) {

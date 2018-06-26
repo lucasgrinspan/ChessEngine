@@ -33,7 +33,9 @@
         "cwctype": "cpp",
         "iosfwd": "cpp",
         "array": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "cinttypes": "cpp",
+        "cmath": "cpp"
     },
     "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false
