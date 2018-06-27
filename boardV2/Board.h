@@ -25,6 +25,9 @@ class Board {
         const bool MOVEMENT = false;
         const bool INFLUENCE = true;
 
+        int kingPositionWhite = 35;
+        int kingPositionBlack = 4;
+
         std::array<char, 64> m_board;
         std::array<bool, 64> m_attackedSquares;
         std::array<bool, 6> m_movedPiecesList;
@@ -34,6 +37,9 @@ class Board {
         bool isOpponentPiece(char piece, bool color);
         bool withinBounds(int x, int y);
         void generateAttackedSquares(bool color);
+
+        void hideKing(bool color);
+        void resetKing(bool color);
 
         bool isInCheck(int tileNumber);
         std::string getPiece(int tileNum);

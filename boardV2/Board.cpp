@@ -18,6 +18,7 @@ Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::
     m_board = pieces;
     m_movedPiecesList = movedPieces;
     m_lastMove = lastMove;
+    
     //  White has first move
     generateAttackedSquares(false);
 }
@@ -47,6 +48,17 @@ bool Board::withinBounds(int x, int y) {
 }
 bool Board::isInCheck(int tileNumber) {
     return m_attackedSquares[tileNumber];
+}
+void Board::hideKing(bool color) {
+    //  Hide the king in the board so that ray pieces do not take the king into account
+    int kingPosition = color ? kingPositionWhite : kingPositionBlack;
+    m_board[kingPosition] = ' ';
+}
+void Board::resetKing(bool color) {
+    //  Reset the king position
+    char kingPiece = color ? 'k' : 'K';
+    int kingPosition = color ? kingPositionWhite : kingPositionBlack;
+    m_board[kingPosition] = kingPiece;
 }
 void Board::printBoard() {
     for (int i = 0; i < NUM_TILES; i++) {
@@ -324,6 +336,8 @@ void Board::generateAttackedSquares(bool color) {
     std::array<bool, 64> attackedSquares;
     attackedSquares.fill(false);
     
+    //  Remove the king from the board so that the ray pieces do not take it into account
+    hideKing(!color);
     for (int i = 0; i < NUM_TILES; i++) {
         if (!isOpponentPiece(m_board[i], color)) {
             char piece = std::tolower(m_board[i]);
@@ -380,6 +394,11 @@ void Board::generateAttackedSquares(bool color) {
             }
         }
     }
+    //  Put the king back in the board
+    printBoard();
+    resetKing(!color);
+
+
     //  Print attacking squares
     // for (int i = 0; i < NUM_TILES; i++) {
     //     if (i % 8 == 0) {
@@ -394,10 +413,13 @@ void Board::generateAttackedSquares(bool color) {
 std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
     
+    //  Determine if king is in check
+
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
 
+        //TODO: add way to check by what pieces the king is in check
         int position = i;
         char piece = std::tolower(m_board[i]);
         switch (piece) {
