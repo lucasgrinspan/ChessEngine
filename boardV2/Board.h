@@ -51,5 +51,7 @@ class Board {
         std::vector<int> getPawnMoves(int tileNumber, bool color, bool influence);
         std::vector<int> getKingMoves(int tileNumber, bool color, bool influence);
 
+        std::array<int, 2> getCheckLocations(bool color);
+
 };
 #endif

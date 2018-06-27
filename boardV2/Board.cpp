@@ -331,6 +331,68 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
     }
     return possibleMoves;
 }
+std::array<int, 2> Board::getCheckLocations(bool color) {
+    std::array<int, 2> checkLocations = {-1, -1};
+    int arrayIndex = 0;
+
+    //  Setup variables
+    int kingLocation = color ? kingPositionWhite : kingPositionBlack;
+    char knightIcon = !color ? 'k' : 'K';
+    char bishopIcon = !color ? 'b' : 'B';
+    char queenIcon  = !color ? 'q' : 'Q';
+    char rookIcon   = !color ? 'r' : 'R';
+    char pawnIcon   = !color ? 'p' : 'P';
+
+    //  Check for check against knight
+    std::vector<int> knightMask = getKnightMoves(kingLocation, !color, INFLUENCE);
+    for (int i = 0; i < knightMask.size(); i++) {
+        if (m_board[knightMask[i]] == knightIcon) {
+            checkLocations[arrayIndex++] = knightMask[i];
+            //  It is not possible to be in check from two knights at the same time, 
+            //  so it is safe to break here
+            break;
+        }
+    }
+
+    //  Check for check against bishop/queen
+    std::vector<int> diagonalMask = getDiagonalMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
+    for (int i = 0; i < diagonalMask.size(); i++) {
+        if (m_board[diagonalMask[i]] == bishopIcon) {
+            checkLocations[arrayIndex++] == diagonalMask[i];
+        } else if (m_board[diagonalMask[i]] == queenIcon) {
+            checkLocations[arrayIndex++] == diagonalMask[i];
+        }
+    }
+    if (arrayIndex == 2) {
+        return checkLocations;
+    }
+
+    //  Check for check from rooks
+    std::vector<int> straightMask = getStraightLineMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
+    for (int i = 0; i < straightMask.size(); i++) {
+        if (m_board[straightMask[i]] == rookIcon) {
+            checkLocations[arrayIndex++] == straightMask[i];
+            //  It is not possible to be in check more than once by a rook,
+            //  so it is safe to break here
+            break;
+        }
+    }
+    if (arrayIndex == 2) {
+        return checkLocations;
+    }
+
+    //  Check for check from pawns
+    std::vector<int> pawnMask = getPawnMoves(kingLocation, !color, INFLUENCE); 
+    for (int i = 0; i < pawnMask.size(); i++) {    
+        if (m_board[pawnMask[i]] == pawnIcon) {
+            checkLocations[arrayIndex] == pawnMask[i];
+            //  It is not possible to be in check more than once by a rook,
+            //  so it is safe to break here
+            break;
+        }
+    }
+    return checkLocations;
+}
 void Board::generateAttackedSquares(bool color) {
     //  Get the squares attacked by the color in the parameter
     std::array<bool, 64> attackedSquares;
@@ -414,7 +476,14 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
     
     //  Determine if king is in check
+    int kingPosition = color ? kingPositionWhite : kingPositionBlack;
+    bool check = isInCheck(kingPosition);
+    //  Tracks the position of pieces checking the king
+    int firstCheck = -1;
+    int secondCheck = -1;
+    if (check) {
 
+    }
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
