@@ -332,12 +332,13 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
     return possibleMoves;
 }
 std::array<int, 2> Board::getCheckLocations(bool color) {
+    //  Parameter is the color of the king in check
     std::array<int, 2> checkLocations = {-1, -1};
     int arrayIndex = 0;
 
     //  Setup variables
     int kingLocation = color ? kingPositionWhite : kingPositionBlack;
-    char knightIcon = !color ? 'k' : 'K';
+    char knightIcon = !color ? 'n' : 'N';
     char bishopIcon = !color ? 'b' : 'B';
     char queenIcon  = !color ? 'q' : 'Q';
     char rookIcon   = !color ? 'r' : 'R';
@@ -358,9 +359,9 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
     std::vector<int> diagonalMask = getDiagonalMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
     for (int i = 0; i < diagonalMask.size(); i++) {
         if (m_board[diagonalMask[i]] == bishopIcon) {
-            checkLocations[arrayIndex++] == diagonalMask[i];
+            checkLocations[arrayIndex++] = diagonalMask[i];
         } else if (m_board[diagonalMask[i]] == queenIcon) {
-            checkLocations[arrayIndex++] == diagonalMask[i];
+            checkLocations[arrayIndex++] = diagonalMask[i];
         }
     }
     if (arrayIndex == 2) {
@@ -371,9 +372,12 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
     std::vector<int> straightMask = getStraightLineMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
     for (int i = 0; i < straightMask.size(); i++) {
         if (m_board[straightMask[i]] == rookIcon) {
-            checkLocations[arrayIndex++] == straightMask[i];
-            //  It is not possible to be in check more than once by a rook,
+            checkLocations[arrayIndex++] = straightMask[i];
+            //  It is not possible to be in check more than once by a rook or horizontal queen,
             //  so it is safe to break here
+            break;
+        } else if (m_board[straightMask[i]] == queenIcon) {
+            checkLocations[arrayIndex++] = straightMask[i];
             break;
         }
     }
@@ -385,7 +389,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
     std::vector<int> pawnMask = getPawnMoves(kingLocation, !color, INFLUENCE); 
     for (int i = 0; i < pawnMask.size(); i++) {    
         if (m_board[pawnMask[i]] == pawnIcon) {
-            checkLocations[arrayIndex] == pawnMask[i];
+            checkLocations[arrayIndex] = pawnMask[i];
             //  It is not possible to be in check more than once by a rook,
             //  so it is safe to break here
             break;
@@ -457,7 +461,6 @@ void Board::generateAttackedSquares(bool color) {
         }
     }
     //  Put the king back in the board
-    printBoard();
     resetKing(!color);
 
 
@@ -479,11 +482,20 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
     bool check = isInCheck(kingPosition);
     //  Tracks the position of pieces checking the king
-    int firstCheck = -1;
-    int secondCheck = -1;
+    std::array<int, 2> checkLocations;
+    int captureMask;
+    bool doubleCheck = false;
     if (check) {
-
+        checkLocations = getCheckLocations(color);
+        //  Determine if a capture mask can be used
+        //  If a king is in double check, a capture mask can not be used and the king must move
+        if (checkLocations[1] == -1) {
+            captureMask = checkLocations[0];
+        } else {
+            doubleCheck = true;
+        }
     }
+
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
@@ -493,10 +505,12 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
         char piece = std::tolower(m_board[i]);
         switch (piece) {
             case 'r': {
+                if (doubleCheck) {break;}
                 possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 break; 
             }      
             case 'q': {
+                if (doubleCheck) {break;}
                 possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 //  Insert diagonal moves
                 std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
@@ -510,15 +524,17 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
                 break;
             }
             case 'n': {
-                
+                if (doubleCheck) {break;}
                 possibleMoves[position] = getKnightMoves(position, color, MOVEMENT);
                 break;
             }
             case 'b': {
+                if (doubleCheck) {break;}
                 possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
                 break;
             }
             case 'p': {
+                if (doubleCheck) {break;}
                 possibleMoves[position] = getPawnMoves(position, color, MOVEMENT);
                 break;
             }
