@@ -17,7 +17,8 @@
 Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove) {
     m_board = pieces;
     m_movedPiecesList = movedPieces;
-    m_lastMove = lastMove;
+    m_lastMove0 = std::stoi(lastMove.substr(0, 2));
+    m_lastMove1 = std::stoi(lastMove.substr(2));
     
     //  White has first move
     generateAttackedSquares(false);
@@ -352,9 +353,28 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
         }
     }
     //  Check for en passant
-    int enPassantColumn = color ? 3 : 4;
-    if (y == enPassantColumn) {
-        //TODO: check last move and apply rule
+    int enPassantRow = color ? 3 : 4;
+    if (y == enPassantRow) {
+        char pawnIcon = color ? 'p' : 'P';
+        int pawnStartRow = color ? 1 : 6;
+
+        //  For en passant to apply, the last move must be a double push forward
+        //  from a pawn, ending up directly next to an opponent's pawn
+        if ((getYCoord(m_lastMove0) == pawnStartRow) &&
+            (getYCoord(m_lastMove1) == enPassantRow) &&
+            (std::tolower(m_board[m_lastMove1]) == 'p') &&
+            (std::abs(tileNumber - m_lastMove1) == 1)) {
+                int enPassantTarget = m_lastMove1;
+                int modifier = color ? -1 : 1;
+                int moveLocation = enPassantTarget + (modifier * 8);
+
+                //  En passant is unique because either the opponent pawn is in the capture mask, 
+                //  or the resulting tile is in the block mask
+                if (m_captureMask[enPassantTarget] || 
+                    m_blockMask[moveLocation]) {
+                        possibleMoves.push_back(moveLocation);
+                    }
+        }
     }
     return possibleMoves;
 }

@@ -34,7 +34,8 @@ class Board {
         std::array<bool, 64> m_captureMask;
         std::array<bool, 64> m_blockMask;
         std::array<bool, 6> m_movedPiecesList;
-        std::string m_lastMove;
+        int m_lastMove0;
+        int m_lastMove1;
 
         bool isWhite(char piece);
         bool isOpponentPiece(char piece, bool color);

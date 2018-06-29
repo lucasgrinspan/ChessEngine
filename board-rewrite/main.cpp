@@ -4,21 +4,21 @@
 #include<iostream>
 
 int main() {
-    std::array<char, 64> pieces{'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R', 
-                                'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+    std::array<char, 64> pieces{' ', ' ', ' ', ' ', 'K', ' ', ' ', ' ', 
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', 'p', 'P', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', 'k', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p',
-                                'r', 'n', 'b', 'q', ' ', 'b', 'n', 'r'};
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
     
     std::array<bool, 6> movedPieces {false, false, false, false, false, false};
-    std::string lastMove = "----";
+    std::string lastMove = "1026";
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(true);
-    int y = 5;
+    int y = 3;
     int x = 1;
     int piece = board.getTileNumber(x, y);
     std::cout << std::endl;
