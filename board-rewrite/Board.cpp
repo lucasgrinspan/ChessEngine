@@ -69,6 +69,15 @@ void Board::printBoard() {
     }
     std::cout << std::endl;
 }
+void Board::printBitBoard(std::array<bool, 64> board) {
+    for (int i = 0; i < NUM_TILES; i++) {
+        if (i % 8 == 0) {
+            std::cout << std::endl;
+        }
+        std::cout << board[i] << " ";
+    }
+    std::cout << std::endl;
+}
 std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range, bool influence) {
 
     std::vector<int> possibleMoves;
@@ -266,14 +275,18 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
     if (!influence) {
         int tile = tileNumber + (modifier * 8);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
+            if (m_blockMask[tile]) {
+                possibleMoves.push_back(tile);
+            }
             
             //  Check if the pawn is on the second row
             //  so that it can start with a double move forward
             int tile = tileNumber + (modifier * 16);
             if (getYCoord(tileNumber) == startingRow) {
                 if (m_board[tile] == ' ') {
-                    possibleMoves.push_back(tile);
+                    if (m_blockMask[tile]) {
+                        possibleMoves.push_back(tile);
+                    }
                 }
             }
         }
@@ -479,15 +492,20 @@ void Board::generateBlockMask(bool color, int checkLocation) {
     int kingLocation = color ? kingPositionWhite : kingPositionBlack;
     char checkPiece = std::tolower(m_board[checkLocation]);
 
+    int x0 = getXCoord(kingLocation);
+    int y0 = getYCoord(kingLocation);
+    int x1 = getXCoord(checkLocation);
+    int y1 = getYCoord(checkLocation);
+
+    int delx = x1 - x0;
+    int dely = y1 - y0;
     if (checkPiece == 'q') {
         //  Determine if queen is checking horizontally/vertically or diagonally
-        checkPiece = 'b';
-        if ((kingLocation - checkLocation) % 8 == 0) {
-            //  This would be true if the check is vertical
-            //  For all intents and purposes, the queen is checki
-            checkPiece = 'r';
-        } else if ((kingLocation / 8) == (checkLocation / 8)) {
-            //  This would be true if the check is horizontal
+        if (std::abs(delx) == std::abs(dely)) {
+            //  This would only be true if the queen was checking diagonally
+            //  like a bishop
+            checkPiece = 'b';
+        } else {
             checkPiece = 'r';
         }
     }
@@ -496,9 +514,32 @@ void Board::generateBlockMask(bool color, int checkLocation) {
             return;
         }
         case 'b': {
+            //  Iterate through the squares along the diagonal
+            int limit = std::max(std::abs(delx), std::abs(dely));
+            //  Decides along which diagonal it is
+            int horizontalModifier = (delx < 0) ? -1 : 1;
+            int verticalModifier = (dely < 0) ? -8 : 8;
+
+            for (int i = 1; i < limit; i++) {
+                int tile = kingLocation + (i * (horizontalModifier + verticalModifier));
+                m_blockMask[tile] = true;
+            }
+            printBitBoard(m_blockMask);
             break;
         }
         case 'r': {
+            //  Iterate through the squares between the checing piece and the
+            //  king piece
+            int limit = std::max(std::abs(delx), std::abs(dely));
+            //  Columns differ by 1, rows by 8 in terms of index
+            int orientation = (delx == 0) ? 8 : 1;
+            //  If either of the deltas are negative, the modifier is negative
+            int modifier = ((delx < 0) || (dely < 0)) ? -1 : 1;
+            
+            for (int i = 1; i < limit; i++) {
+                int tile = kingLocation + (i * orientation * modifier);
+                m_blockMask[tile] = true;
+            }
             break;
         }
     }
@@ -506,7 +547,9 @@ void Board::generateBlockMask(bool color, int checkLocation) {
 }
 std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
-    
+    //  The masks should be true if no check is present
+    m_blockMask.fill(true);
+    m_captureMask.fill(true);
     //  Determine if king is in check
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
     bool check = isInCheck(kingPosition);
@@ -521,6 +564,9 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
         if (checkLocations[1] == -1) {
             //  Single check
             //  Generate capture and block mask
+            m_captureMask.fill(false);
+            m_blockMask.fill(false);
+            
             int captureLocation = checkLocations[0];
             m_captureMask[captureLocation] = true;
 

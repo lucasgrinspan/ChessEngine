@@ -7,6 +7,7 @@ class Board {
     public:
         Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove);
         void printBoard();
+        void printBitBoard(std::array<bool, 64> board);
 
         bool movePiece(int tileNum0, int tileNum1, int promotionCase);
         std::array<std::vector<int>, 64> getPossibleMoves(bool color);

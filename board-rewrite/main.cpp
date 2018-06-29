@@ -8,7 +8,7 @@ int main() {
                                 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                'R', ' ', ' ', 'k', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', 'k', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 'p', 'p', 'p', 'p', ' ', 'p', 'p', 'p',
                                 'r', 'n', 'b', 'q', ' ', 'b', 'n', 'r'};
@@ -18,9 +18,10 @@ int main() {
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(true);
-    int y = 4;
-    int x = 3;
+    int y = 6;
+    int x = 2;
     int piece = board.getTileNumber(x, y);
+    std::cout << std::endl;
     for (int i = 0; i < possibleMoves[piece].size(); i++) {
         std::cout << board.getYCoord(possibleMoves[piece][i]) << board.getXCoord(possibleMoves[piece][i]) << std::endl;
     }
