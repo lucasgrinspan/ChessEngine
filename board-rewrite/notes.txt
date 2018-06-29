@@ -1,0 +1,4 @@
+white = true, black = false
+
+capture, block, and attacked squares must be reset after every move
+king position must be updated after every move

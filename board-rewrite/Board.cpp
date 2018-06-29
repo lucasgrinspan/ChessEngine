@@ -475,6 +475,35 @@ void Board::generateAttackedSquares(bool color) {
 
     m_attackedSquares = attackedSquares;
 }
+void Board::generateBlockMask(bool color, int checkLocation) {
+    int kingLocation = color ? kingPositionWhite : kingPositionBlack;
+    char checkPiece = std::tolower(m_board[checkLocation]);
+
+    if (checkPiece == 'q') {
+        //  Determine if queen is checking horizontally/vertically or diagonally
+        checkPiece = 'b';
+        if ((kingLocation - checkLocation) % 8 == 0) {
+            //  This would be true if the check is vertical
+            //  For all intents and purposes, the queen is checki
+            checkPiece = 'r';
+        } else if ((kingLocation / 8) == (checkLocation / 8)) {
+            //  This would be true if the check is horizontal
+            checkPiece = 'r';
+        }
+    }
+    switch (checkPiece) {
+        case 'n': {
+            return;
+        }
+        case 'b': {
+            break;
+        }
+        case 'r': {
+            break;
+        }
+    }
+
+}
 std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
     
@@ -483,19 +512,26 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     bool check = isInCheck(kingPosition);
     //  Tracks the position of pieces checking the king
     std::array<int, 2> checkLocations;
-    int captureMask;
+
     bool doubleCheck = false;
     if (check) {
         checkLocations = getCheckLocations(color);
         //  Determine if a capture mask can be used
-        //  If a king is in double check, a capture mask can not be used and the king must move
+        //  If a king is in double check, a capture/block mask can not be used and the king must move
         if (checkLocations[1] == -1) {
-            captureMask = checkLocations[0];
+            //  Single check
+            //  Generate capture and block mask
+            int captureLocation = checkLocations[0];
+            m_captureMask[captureLocation] = true;
+
+            generateBlockMask(color, captureLocation);
         } else {
+            //  Double check
             doubleCheck = true;
         }
     }
 
+    //  Check each piece
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}

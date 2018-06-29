@@ -30,6 +30,8 @@ class Board {
 
         std::array<char, 64> m_board;
         std::array<bool, 64> m_attackedSquares;
+        std::array<bool, 64> m_captureMask;
+        std::array<bool, 64> m_blockMask;
         std::array<bool, 6> m_movedPiecesList;
         std::string m_lastMove;
 
@@ -37,6 +39,7 @@ class Board {
         bool isOpponentPiece(char piece, bool color);
         bool withinBounds(int x, int y);
         void generateAttackedSquares(bool color);
+        void generateBlockMask(bool color, int checkLocation);
 
         void hideKing(bool color);
         void resetKing(bool color);
