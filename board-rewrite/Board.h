@@ -45,8 +45,8 @@ class Board {
         void hideKing(bool color);
         void resetKing(bool color);
 
+        bool checkMask(int tileNumber);
         bool isInCheck(int tileNumber);
-        std::string getPiece(int tileNum);
 
         //  TODO: remove range parameter from straight and diagonal 
         std::vector<int> getStraightLineMoves(int tileNumber, bool color, int length, bool influence);

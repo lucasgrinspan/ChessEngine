@@ -49,6 +49,9 @@ bool Board::withinBounds(int x, int y) {
 bool Board::isInCheck(int tileNumber) {
     return m_attackedSquares[tileNumber];
 }
+bool Board::checkMask(int tileNumber) {
+    return (m_blockMask[tileNumber] || m_captureMask[tileNumber]);
+}
 void Board::hideKing(bool color) {
     //  Hide the king in the board so that ray pieces do not take the king into account
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
@@ -91,11 +94,15 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
     for (int j = 1; j < std::min(limitRight, range); j++) {
         int tile = tileNumber + j;
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -107,11 +114,15 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
     for (int j = 1; j < std::min(limitLeft, range); j++) {
         int tile = tileNumber - j;
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -123,11 +134,15 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
     for (int j = 1; j < std::min(limitUp, range); j++) {
         int tile = tileNumber - (j * 8);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -139,11 +154,15 @@ std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int ran
     for (int j = 1; j < std::min(limitDown, range); j++) {
         int tile = tileNumber + (j * 8);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -170,11 +189,15 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range, 
         //  Subtracting 7 gives you the tile up and to the right
         int tile = tileNumber - (7 * j);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -187,11 +210,15 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range, 
         //  Subtracting 9 gives you the tile up and to the left
         int tile = tileNumber - (9 * j);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -204,11 +231,15 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range, 
         //  Adding 9 gives you the tile down and to the right
         int tile = tileNumber + (9 * j);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -221,11 +252,15 @@ std::vector<int> Board::getDiagonalMoves(int tileNumber, bool color, int range, 
         //  Adding 7 gives you the tile up and to the right
         int tile = tileNumber + (7 * j);
         if (m_board[tile] == ' ') {
-            possibleMoves.push_back(tile);
-            continue;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                continue;
+            }
         } else if (isOpponentPiece(m_board[tile], color)) {
-            possibleMoves.push_back(tile);
-            break;
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+                break;
+            }
         } else {
             if (influence) {
                 possibleMoves.push_back(tile);
@@ -254,11 +289,17 @@ std::vector<int> Board::getKnightMoves(int tileNumber, bool color, bool influenc
         if (withinBounds(x1, y1)) {
             int tile = getTileNumber(x1, y1);
             if (m_board[tile] == ' ') {
-                possibleMoves.push_back(tile);
+                if (influence || checkMask(tile)) {
+                    possibleMoves.push_back(tile);
+                }
             } else if (isOpponentPiece(m_board[tile], color)) {
-                possibleMoves.push_back(tile);
-            } else if (influence) {
-                possibleMoves.push_back(tile);
+                if (influence || checkMask(tile)) {
+                    possibleMoves.push_back(tile);
+                }
+            } else {
+                if (influence) {
+                    possibleMoves.push_back(tile);
+                }
             }
         }
     }
@@ -296,14 +337,18 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
         //  Get tile to the left diagonal
         int tile = tileNumber + (modifier * 8) - 1;
         if (isOpponentPiece(m_board[tile], color) || influence) {
-            possibleMoves.push_back(tile);
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+            }
         }
     }
     if (x != 7) {
         //  Get tile to the right diagonal
         int tile = tileNumber + (modifier * 8) + 1;
         if (isOpponentPiece(m_board[tile], color) || influence) {
-            possibleMoves.push_back(tile);
+            if (influence || checkMask(tile)) {
+                possibleMoves.push_back(tile);
+            }
         }
     }
     //  Check for en passant
@@ -550,6 +595,7 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     //  The masks should be true if no check is present
     m_blockMask.fill(true);
     m_captureMask.fill(true);
+
     //  Determine if king is in check
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
     bool check = isInCheck(kingPosition);
@@ -582,7 +628,6 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
 
-        //TODO: add way to check by what pieces the king is in check
         int position = i;
         char piece = std::tolower(m_board[i]);
         switch (piece) {

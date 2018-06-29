@@ -18,8 +18,8 @@ int main() {
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(true);
-    int y = 6;
-    int x = 2;
+    int y = 5;
+    int x = 1;
     int piece = board.getTileNumber(x, y);
     std::cout << std::endl;
     for (int i = 0; i < possibleMoves[piece].size(); i++) {
