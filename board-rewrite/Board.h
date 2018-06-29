@@ -26,7 +26,7 @@ class Board {
         const bool MOVEMENT = false;
         const bool INFLUENCE = true;
 
-        int kingPositionWhite = 35;
+        int kingPositionWhite = 36;
         int kingPositionBlack = 4;
 
         std::array<char, 64> m_board;
@@ -42,6 +42,7 @@ class Board {
         bool withinBounds(int x, int y);
         void generateAttackedSquares(bool color);
         void generateBlockMask(bool color, int checkLocation);
+        int calculatePin(bool color, int limit, int increment, int initialPos, char validPinner);
 
         void hideKing(bool color);
         void resetKing(bool color);
@@ -57,6 +58,8 @@ class Board {
         std::vector<int> getKingMoves(int tileNumber, bool color, bool influence);
 
         std::array<int, 2> getCheckLocations(bool color);
+        std::array<int, 8> getPinnedPieces(bool color);
+
 
 };
 #endif

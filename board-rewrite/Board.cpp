@@ -464,7 +464,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
     }
 
     //  Check for check from pawns
-    std::vector<int> pawnMask = getPawnMoves(kingLocation, !color, INFLUENCE); 
+    std::vector<int> pawnMask = getPawnMoves(kingLocation, color, INFLUENCE); 
     for (int i = 0; i < pawnMask.size(); i++) {    
         if (m_board[pawnMask[i]] == pawnIcon) {
             checkLocations[arrayIndex] = pawnMask[i];
@@ -474,6 +474,115 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
         }
     }
     return checkLocations;
+}
+std::array<int, 8> Board::getPinnedPieces(bool color) {
+    //  This function works by iterating over squares in all of the eight possible
+    //  directions from the king square. If a valid enemy piece is detected after a
+    //  friendly piece, then the friendly piece is considered to be pinned. Diagonal
+    //  pins can only be from a bishop or queen, and straight line pins can only be
+    //  from a rook or queen.
+
+    //  There can be at most 8 pins at a time
+    std::array<int, 8> pinnedPieces;
+    pinnedPieces.fill(-1);
+    int arrayIndex = 0;
+
+    int kingLocation = color ? kingPositionWhite : kingPositionBlack;
+
+    //  Set up iteration limits
+    int limitRight = BOARD_LENGTH - getXCoord(kingLocation);
+    int limitLeft = getXCoord(kingLocation) + 1;
+    int limitUp = getYCoord(kingLocation) + 1;
+    int limitDown = BOARD_LENGTH - getYCoord(kingLocation);
+
+    //  Check squares to the right
+    int pinLocation = calculatePin(color, limitRight, 1, kingLocation, 'r');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares to the left
+    pinLocation = calculatePin(color, limitLeft, -1, kingLocation, 'r');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares above
+    pinLocation = calculatePin(color, limitUp, -8, kingLocation, 'r');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares below
+    pinLocation = calculatePin(color, limitDown, 8, kingLocation, 'r');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares up right
+    pinLocation = calculatePin(color, std::min(limitRight, limitUp), -7, kingLocation, 'b');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares up left
+    pinLocation = calculatePin(color, std::min(limitLeft, limitUp), -9, kingLocation, 'b');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares down right
+    pinLocation = calculatePin(color, std::min(limitRight, limitDown), 9, kingLocation, 'b');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+
+    //  Check squares down left
+    pinLocation = calculatePin(color, std::min(limitLeft, limitDown), 7, kingLocation, 'b');
+    if (pinLocation != -1) {
+        pinnedPieces[arrayIndex++] = pinLocation;
+    }
+    
+    return pinnedPieces;
+}
+int Board::calculatePin(bool color, int limit, int increment, int initialPos, char validPinner) {
+    int pinnedLocation = -1;
+
+    bool possiblePin = false;
+    for (int i = 1; i < limit; i++) {
+        int tile = initialPos + (i * increment);
+        if (m_board[tile] == ' ') {
+            continue;
+        } else if (!isOpponentPiece(m_board[tile], color)) {
+            if (possiblePin) {
+                //  No pin
+                possiblePin = false;
+                break;
+            }
+            pinnedLocation = tile;
+            possiblePin = true;
+            continue;
+        } else {
+            if (possiblePin) {
+                char enemyPiece = std::tolower(m_board[tile]);
+                if (enemyPiece == 'q') {
+                    //  Pin
+                    return pinnedLocation;
+                } else if (enemyPiece == validPinner) {
+                    //  Pin
+                    return pinnedLocation;
+                } else {
+                    //  No pin
+                    break;
+                }
+            } else {
+                //  No pin
+                break;
+            }
+        }
+    }
+    //  No pin returned
+    return -1;
 }
 void Board::generateAttackedSquares(bool color) {
     //  Get the squares attacked by the color in the parameter
@@ -589,7 +698,6 @@ void Board::generateBlockMask(bool color, int checkLocation) {
                 int tile = kingLocation + (i * (horizontalModifier + verticalModifier));
                 m_blockMask[tile] = true;
             }
-            printBitBoard(m_blockMask);
             break;
         }
         case 'r': {
@@ -642,6 +750,8 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
             doubleCheck = true;
         }
     }
+    //  Check for pins
+    std::array<int, 8> pinnedPieces = getPinnedPieces(color);
 
     //  Check each piece
     for (int i = 0; i < NUM_TILES; i++) {
