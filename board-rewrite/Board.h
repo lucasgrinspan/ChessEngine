@@ -33,6 +33,7 @@ class Board {
         std::array<bool, 64> m_attackedSquares;
         std::array<bool, 64> m_captureMask;
         std::array<bool, 64> m_blockMask;
+        std::array<bool, 64> m_pinnedMask;
         std::array<bool, 6> m_movedPiecesList;
         int m_lastMove0;
         int m_lastMove1;
@@ -58,8 +59,7 @@ class Board {
         std::vector<int> getKingMoves(int tileNumber, bool color, bool influence);
 
         std::array<int, 2> getCheckLocations(bool color);
-        std::array<int, 8> getPinnedPieces(bool color);
-
+        std::array<std::vector<int>, 64> generatePinnedMask(bool color);
 
 };
 #endif

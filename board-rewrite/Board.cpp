@@ -475,17 +475,14 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
     }
     return checkLocations;
 }
-std::array<int, 8> Board::getPinnedPieces(bool color) {
+std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
     //  This function works by iterating over squares in all of the eight possible
     //  directions from the king square. If a valid enemy piece is detected after a
     //  friendly piece, then the friendly piece is considered to be pinned. Diagonal
     //  pins can only be from a bishop or queen, and straight line pins can only be
     //  from a rook or queen.
-
-    //  There can be at most 8 pins at a time
-    std::array<int, 8> pinnedPieces;
-    pinnedPieces.fill(-1);
-    int arrayIndex = 0;
+    std::array<std::vector<int>, 64> pinnedMoves;
+    m_pinnedMask.fill(false);
 
     int kingLocation = color ? kingPositionWhite : kingPositionBlack;
 
@@ -498,52 +495,131 @@ std::array<int, 8> Board::getPinnedPieces(bool color) {
     //  Check squares to the right
     int pinLocation = calculatePin(color, limitRight, 1, kingLocation, 'r');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        //  Build the moves for the pinned pieces
+        if (pinnedPiece == 'r' ||
+            pinnedPiece == 'q') {
+
+            //  Get the tiles to the right
+            int tile = pinLocation + 1;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile++;
+            }
+            //  Add the possibility of capture
+            pinnedMoves[pinLocation].push_back(tile); 
+
+            //  Get the tiles to the left
+            tile = pinLocation - 1;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile--;
+            }
+        } else if (pinnedPiece == 'p') {
+            //  Determine which way the pawn moves
+            int direction = color ? -8 : 8;
+            int tile = pinLocation + direction;
+
+            //  Check the tile directly in front
+            if (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+
+                //  Check the tile two spaces in front if possible
+                
+            }
+        }
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares to the left
     pinLocation = calculatePin(color, limitLeft, -1, kingLocation, 'r');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        //  Build the moves for the pinned pieces
+        if (pinnedPiece == 'r' ||
+            pinnedPiece == 'q') {
+
+            //  Get the tiles to the right
+            int tile = pinLocation + 1;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile++;
+            }
+
+            //  Get the tiles to the left
+            tile = pinLocation - 1;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile--;
+            }
+
+            //  Add the possibility of capture
+            pinnedMoves[pinLocation].push_back(tile);
+        }
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares above
     pinLocation = calculatePin(color, limitUp, -8, kingLocation, 'r');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        //  Build the moves for the pinned pieces
+        if (pinnedPiece == 'r' ||
+            pinnedPiece == 'q') {
+
+            //  Get the tiles above
+            int tile = pinLocation - 8;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile -= 8;
+            }
+
+            //  Add the possibility of capture
+            pinnedMoves[pinLocation].push_back(tile); 
+
+            //  Get the tiles below
+            tile = pinLocation + 8;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile += 8;
+            }
+        }
+        for (int square : pinnedMoves[pinLocation]) {
+            Log(square);
+        }
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares below
     pinLocation = calculatePin(color, limitDown, 8, kingLocation, 'r');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares up right
     pinLocation = calculatePin(color, std::min(limitRight, limitUp), -7, kingLocation, 'b');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares up left
     pinLocation = calculatePin(color, std::min(limitLeft, limitUp), -9, kingLocation, 'b');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares down right
     pinLocation = calculatePin(color, std::min(limitRight, limitDown), 9, kingLocation, 'b');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares down left
     pinLocation = calculatePin(color, std::min(limitLeft, limitDown), 7, kingLocation, 'b');
     if (pinLocation != -1) {
-        pinnedPieces[arrayIndex++] = pinLocation;
+        m_pinnedMask[pinLocation] = true;
     }
-    
-    return pinnedPieces;
+    return pinnedMoves;
 }
 int Board::calculatePin(bool color, int limit, int increment, int initialPos, char validPinner) {
     int pinnedLocation = -1;
@@ -751,7 +827,7 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
         }
     }
     //  Check for pins
-    std::array<int, 8> pinnedPieces = getPinnedPieces(color);
+    std::array<std::vector<int>, 64> pinnedPieces = generatePinnedMask(color);
 
     //  Check each piece
     for (int i = 0; i < NUM_TILES; i++) {
