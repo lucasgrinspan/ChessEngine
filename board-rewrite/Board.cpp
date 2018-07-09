@@ -40,7 +40,7 @@ bool Board::isOpponentPiece(char piece, bool color) {
     if (piece == ' ') {
         return false;
     } else {
-        return std::islower(piece) != color;
+        return (bool) std::islower(piece) != color;
     }
 }
 bool Board::withinBounds(int x, int y) {
@@ -500,8 +500,9 @@ std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
         if (pinnedPiece == 'r' ||
             pinnedPiece == 'q') {
 
+            int offset = 1;
             //  Get the tiles to the right
-            int tile = pinLocation + 1;
+            int tile = pinLocation + offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
                 tile++;
@@ -510,24 +511,12 @@ std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
             pinnedMoves[pinLocation].push_back(tile); 
 
             //  Get the tiles to the left
-            tile = pinLocation - 1;
+            tile = pinLocation - offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
                 tile--;
             }
-        } else if (pinnedPiece == 'p') {
-            //  Determine which way the pawn moves
-            int direction = color ? -8 : 8;
-            int tile = pinLocation + direction;
-
-            //  Check the tile directly in front
-            if (m_board[tile] == ' ') {
-                pinnedMoves[pinLocation].push_back(tile);
-
-                //  Check the tile two spaces in front if possible
-                
-            }
-        }
+        } 
         m_pinnedMask[pinLocation] = true;
     }
 
@@ -539,15 +528,16 @@ std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
         if (pinnedPiece == 'r' ||
             pinnedPiece == 'q') {
 
+            int offset = 1;
             //  Get the tiles to the right
-            int tile = pinLocation + 1;
+            int tile = pinLocation + offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
                 tile++;
             }
 
             //  Get the tiles to the left
-            tile = pinLocation - 1;
+            tile = pinLocation - offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
                 tile--;
@@ -566,26 +556,42 @@ std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
         //  Build the moves for the pinned pieces
         if (pinnedPiece == 'r' ||
             pinnedPiece == 'q') {
-
+            
+            int offset = 8;
             //  Get the tiles above
-            int tile = pinLocation - 8;
+            int tile = pinLocation - offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
-                tile -= 8;
+                tile -= offset;
             }
 
             //  Add the possibility of capture
             pinnedMoves[pinLocation].push_back(tile); 
 
             //  Get the tiles below
-            tile = pinLocation + 8;
+            tile = pinLocation + offset;
             while (m_board[tile] == ' ') {
                 pinnedMoves[pinLocation].push_back(tile);
-                tile += 8;
+                tile += offset;
             }
-        }
-        for (int square : pinnedMoves[pinLocation]) {
-            Log(square);
+        } else if (pinnedPiece == 'p') {
+            //  Get the tile directly above
+            int offset = 8;
+            int direction = color ? -offset : offset;
+            int tile = pinLocation + direction;
+
+            if (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+
+                //  Get the second tile if valid
+                int startingRow = color ? 6 : 1;
+                if (getYCoord(pinLocation) == startingRow) {
+                    int tile = pinLocation + (2 * direction);
+                    if (m_board[tile] == ' ') {
+                        pinnedMoves[pinLocation].push_back(tile);
+                    }
+                }
+            }
         }
         m_pinnedMask[pinLocation] = true;
     }
@@ -593,35 +599,202 @@ std::array<std::vector<int>, 64> Board::generatePinnedMask(bool color) {
     //  Check squares below
     pinLocation = calculatePin(color, limitDown, 8, kingLocation, 'r');
     if (pinLocation != -1) {
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        //  Build the moves for the pinned pieces
+        if (pinnedPiece == 'r' ||
+            pinnedPiece == 'q') {
+            
+            int offset = 8;
+            //  Get the tiles above
+            int tile = pinLocation - offset;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile -= offset;
+            }
+
+            //  Add the possibility of capture
+            pinnedMoves[pinLocation].push_back(tile); 
+
+            //  Get the tiles below
+            tile = pinLocation + offset;
+            while (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+                tile += offset;
+            }
+        } else if (pinnedPiece == 'p') {
+            //  Get the tile directly above
+            int offset = 8;
+            int direction = color ? -offset : offset;
+            int tile = pinLocation + direction;
+
+            if (m_board[tile] == ' ') {
+                pinnedMoves[pinLocation].push_back(tile);
+
+                //  Get the second tile if valid
+                int startingRow = color ? 6 : 1;
+                if (getYCoord(pinLocation) == startingRow) {
+                    int tile = pinLocation + (2 * direction);
+                    if (m_board[tile] == ' ') {
+                        pinnedMoves[pinLocation].push_back(tile);
+                    }
+                }
+            }
+        }
         m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares up right
     pinLocation = calculatePin(color, std::min(limitRight, limitUp), -7, kingLocation, 'b');
     if (pinLocation != -1) {
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        if (pinnedPiece == 'b' ||
+            pinnedPiece == 'q') {
+                int offset = 7;
+                //  Get the tiles away from the king
+                int tile = pinLocation - offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile -= offset;
+                }
+
+                //  Add the possibility of capture
+                pinnedMoves[pinLocation].push_back(tile); 
+
+                //  Get the tiles towards the king
+                tile = pinLocation + offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile += offset;
+                }
+        } else if (pinnedPiece == 'p') {
+            //  Under a diagonal pin, a pawn can only capture
+            int offset = 7;
+            int tile = pinLocation - offset;
+            if (isOpponentPiece(m_board[tile], color)) {
+                //  It can only be white that takes in the negative direction
+                if (color) {
+                    pinnedMoves[pinLocation].push_back(tile);
+                }
+            }
+        }
         m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares up left
     pinLocation = calculatePin(color, std::min(limitLeft, limitUp), -9, kingLocation, 'b');
     if (pinLocation != -1) {
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        if (pinnedPiece == 'b' ||
+            pinnedPiece == 'q') {
+                int offset = 9;
+                //  Get the tiles away from the king
+                int tile = pinLocation - offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile -= offset;
+                }
+
+                //  Add the possibility of capture
+                pinnedMoves[pinLocation].push_back(tile); 
+
+                //  Get the tiles towards the king
+                tile = pinLocation + offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile += offset;
+                }
+        } else if (pinnedPiece == 'p') {
+            //  Under a diagonal pin, a pawn can only capture
+            int offset = 9;
+            int tile = pinLocation - offset;
+            if (isOpponentPiece(m_board[tile], color)) {
+                //  It can only be white that takes in the negative direction
+                if (color) {
+                    pinnedMoves[pinLocation].push_back(tile);
+                }
+            }
+        }
         m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares down right
     pinLocation = calculatePin(color, std::min(limitRight, limitDown), 9, kingLocation, 'b');
     if (pinLocation != -1) {
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        if (pinnedPiece == 'b' ||
+            pinnedPiece == 'q') {
+                int offset = -9;
+                //  Get the tiles away from the king
+                int tile = pinLocation - offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile -= offset;
+                }
+
+                //  Add the possibility of capture
+                pinnedMoves[pinLocation].push_back(tile); 
+
+                //  Get the tiles towards the king
+                tile = pinLocation + offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile += offset;
+                }
+        } else if (pinnedPiece == 'p') {
+            //  Under a diagonal pin, a pawn can only capture
+            int offset = -9;
+            int tile = pinLocation - offset;
+            if (isOpponentPiece(m_board[tile], color)) {
+                //  It can only be black that takes in the positive direction
+                if (!color) {
+                    pinnedMoves[pinLocation].push_back(tile);
+                }
+            }
+        }
         m_pinnedMask[pinLocation] = true;
     }
 
     //  Check squares down left
     pinLocation = calculatePin(color, std::min(limitLeft, limitDown), 7, kingLocation, 'b');
     if (pinLocation != -1) {
+        char pinnedPiece = std::tolower(m_board[pinLocation]);
+        if (pinnedPiece == 'b' ||
+            pinnedPiece == 'q') {
+                int offset = -7;
+                //  Get the tiles away from the king
+                int tile = pinLocation - offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile -= offset;
+                }
+
+                //  Add the possibility of capture
+                pinnedMoves[pinLocation].push_back(tile); 
+
+                //  Get the tiles towards the king
+                tile = pinLocation + offset;
+                while (m_board[tile] == ' ') {
+                    pinnedMoves[pinLocation].push_back(tile);
+                    tile += offset;
+                }
+        } else if (pinnedPiece == 'p') {
+            //  Under a diagonal pin, a pawn can only capture
+            int offset = -7;
+            int tile = pinLocation - offset;
+            if (isOpponentPiece(m_board[tile], color)) {
+                //  It can only be black that takes in the positive direction
+                if (color) {
+                    pinnedMoves[pinLocation].push_back(tile);
+                }
+            }
+        }
         m_pinnedMask[pinLocation] = true;
     }
     return pinnedMoves;
 }
 int Board::calculatePin(bool color, int limit, int increment, int initialPos, char validPinner) {
+    //  This function iterates over a direction and returns the location
+    //  of the pin if there is one
     int pinnedLocation = -1;
 
     bool possiblePin = false;
@@ -796,7 +969,7 @@ void Board::generateBlockMask(bool color, int checkLocation) {
 }
 std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     std::array<std::vector<int>, 64> possibleMoves;
-    //  The masks should be true if no check is present
+    //  The masks should be true (empty) if no check is present
     m_blockMask.fill(true);
     m_captureMask.fill(true);
 
@@ -833,12 +1006,16 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     for (int i = 0; i < NUM_TILES; i++) {
         if (m_board[i] == ' ') {continue;}
         if (isOpponentPiece(m_board[i], color)) {continue;}
-
+        
         int position = i;
         char piece = std::tolower(m_board[i]);
         switch (piece) {
             case 'r': {
                 if (doubleCheck) {break;}
+                if (m_pinnedMask[position]) {
+                    possibleMoves[position] = pinnedPieces[position];
+                    break;
+                }
                 possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 break; 
             }      
