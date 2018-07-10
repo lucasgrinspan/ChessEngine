@@ -384,6 +384,7 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
     int x = getXCoord(tileNumber);
     int y = getYCoord(tileNumber);
 
+    //  Creates a 3x3 grid centered on the king, and checks each one
     for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
             //  Filter out squares out of bounds
@@ -404,6 +405,52 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
                         }
                     }
                 }
+            }
+        }
+    }
+
+    //  Check if castling is a possibility
+    //  Get the appropriate king index
+    int kingIndex = color ? WHITE_KING : BLACK_KING;
+    int leftRookIndex = color ? A1_ROOK : A8_ROOK;
+    int rightRookIndex = color ? H1_ROOK : H8_ROOK;
+    if (!m_movedPiecesList[kingIndex]) {
+        //  Check if the squares to both sides of the king are free
+        //  On the left, there must be 3 free squares
+        int counter = 1;
+        while (counter <= 3) {
+            int tile = tileNumber - counter;
+            if (m_board[tile] != ' ') {
+                //  If any of the squares are activated, the check failed
+                break;
+            } else if (isInCheck(tile)) {
+                //  If any of the squares are in check, the check failed
+                break;
+            }
+            counter++;
+        }
+        //  If successful, check if the rook has already moved
+        if (counter == 4) {
+            if (!m_movedPiecesList[leftRookIndex]) {
+                //  Add the move
+                possibleMoves.push_back(tileNumber - 2);
+            }
+        }
+        
+        //  On the right, there must be 2 free squares
+        counter = 1;
+        while (counter <= 2) {
+            int tile = tileNumber + counter;
+            if (m_board[tile] != ' ') {
+                break;
+            } else if (isInCheck(tile)) {
+                break;
+            }
+            counter++;
+        }
+        if (counter == 3) {
+            if (!m_movedPiecesList[rightRookIndex]) {
+                possibleMoves.push_back(tileNumber + 2);
             }
         }
     }
@@ -1021,6 +1068,10 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
             }      
             case 'q': {
                 if (doubleCheck) {break;}
+                if (m_pinnedMask[position]) {
+                    possibleMoves[position] = pinnedPieces[position];
+                    break;
+                }
                 possibleMoves[position] = getStraightLineMoves(position, color, MAX_RANGE, MOVEMENT);
                 //  Insert diagonal moves
                 std::vector<int> diagonalMoves = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
@@ -1035,16 +1086,28 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
             }
             case 'n': {
                 if (doubleCheck) {break;}
+                if (m_pinnedMask[position]) {
+                    //  A knight has no possible moves while pinned
+                    break;
+                }
                 possibleMoves[position] = getKnightMoves(position, color, MOVEMENT);
                 break;
             }
             case 'b': {
                 if (doubleCheck) {break;}
+                if (m_pinnedMask[position]) {
+                    possibleMoves[position] = pinnedPieces[position];
+                    break;
+                }
                 possibleMoves[position] = getDiagonalMoves(position, color, MAX_RANGE, MOVEMENT);
                 break;
             }
             case 'p': {
                 if (doubleCheck) {break;}
+                if (m_pinnedMask[position]) {
+                    possibleMoves[position] = pinnedPieces[position];
+                    break;
+                }
                 possibleMoves[position] = getPawnMoves(position, color, MOVEMENT);
                 break;
             }

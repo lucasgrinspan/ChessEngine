@@ -20,13 +20,22 @@ class Board {
         const int POSITION = 1;
         const int BOARD_LENGTH = 8;
         const int NUM_TILES = 64;
+        
         const int KING_RANGE = 2;
         const int MAX_RANGE = 8;
         const int NUM_KNIGHT_MOVES = 8;
         const bool MOVEMENT = false;
         const bool INFLUENCE = true;
 
-        int kingPositionWhite = 36;
+        //  Consts used for accessing the moved pieces array
+        const int WHITE_KING = 0;
+        const int BLACK_KING = 1;
+        const int A1_ROOK = 2;
+        const int H1_ROOK = 3;
+        const int A8_ROOK = 4;
+        const int H8_ROOK = 5;
+
+        int kingPositionWhite = 60;
         int kingPositionBlack = 4;
 
         std::array<char, 64> m_board;
