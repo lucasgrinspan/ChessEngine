@@ -368,11 +368,73 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
                 int modifier = color ? -1 : 1;
                 int moveLocation = enPassantTarget + (modifier * 8);
 
+                //  Check for the rare double pin case
+                int kingPosition = color ? kingPositionWhite : kingPositionBlack;
+                bool caseFound = false;
+                //  If king exists on the row
+                if (getYCoord(kingPosition) == enPassantRow) {
+                    int limitRight = BOARD_LENGTH - std::max(x, getXCoord(enPassantTarget));
+                    int limitLeft = std::min(x, getXCoord(enPassantTarget)) + 1;
+                    bool kingFound = false;
+                    bool attackingPieceFound = false;
+                    //  Check to the right
+                    for (int i = 1; i < limitRight; i++) {
+                        int tile = std::max(tileNumber, enPassantTarget) + i;
+                        //  Skip over empty tiles
+                        if (m_board[tile] == ' ') {
+                            continue;
+                        } else if (tile == kingPosition) {
+                            kingFound = true;
+                            break;
+                        } else if (isOpponentPiece(m_board[tile], color)) {
+                            //  Only a queen and a rook could pin from this situation
+                            if (std::tolower(m_board[tile]) == 'q' ||
+                                std::tolower(m_board[tile]) == 'r') {
+                                attackingPieceFound = true;
+                                break;
+                            } else {
+                                    goto exit_check;
+                            }
+                        } else {
+                            goto exit_check;
+                        }
+                    }
+                    //  Check to the left
+                    for (int i = 1; i < limitLeft; i++) {
+                        int tile = std::min(tileNumber, enPassantTarget) - i;
+                        if (m_board[tile] == ' ') {
+                            continue;
+                        } else if (tile == kingPosition) {
+                            if (attackingPieceFound) {
+                                caseFound = true;
+                                break;
+                            } else {
+                                goto exit_check;
+                            }
+                        } else if (isOpponentPiece(m_board[tile], color)) {
+                            if (std::tolower(m_board[tile]) == 'q' ||
+                                std::tolower(m_board[tile]) == 'r') {
+                                if (kingFound) {
+                                    caseFound = true;
+                                    break;
+                                } else {
+                                    goto exit_check;
+                                }
+                            } 
+                        } else {
+                            goto exit_check;
+                        }
+                    }
+                }
+                exit_check:
+
                 //  En passant is unique because either the opponent pawn is in the capture mask, 
                 //  or the resulting tile is in the block mask
                 if (m_captureMask[enPassantTarget] || 
                     m_blockMask[moveLocation]) {
-                        possibleMoves.push_back(moveLocation);
+                        if (!caseFound) {
+                            possibleMoves.push_back(moveLocation);
+                        }
                     }
         }
     }

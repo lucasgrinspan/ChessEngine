@@ -35,7 +35,7 @@ class Board {
         const int A8_ROOK = 4;
         const int H8_ROOK = 5;
 
-        int kingPositionWhite = 60;
+        int kingPositionWhite = 30;
         int kingPositionBlack = 4;
 
         std::array<char, 64> m_board;

@@ -5,21 +5,21 @@
 
 int main() {
     std::array<char, 64> pieces{' ', ' ', ' ', ' ', 'K', ' ', ' ', ' ', 
-                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Q',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                                ' ', ' ', ' ', 'Q', 'p', 'P', 'k', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
                                 ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-                                'r', ' ', ' ', ' ', 'k', ' ', ' ', 'r'};
+                                'r', ' ', ' ', ' ', ' ', ' ', ' ', 'r'};
     
     //White king, black king, a1 rook, h1 rook, a8 rook, h8 rook
     std::array<bool, 6> movedPieces {false, false, false, false, false, false};
-    std::string lastMove = "1026";
+    std::string lastMove = "1329";
     Board board(pieces, movedPieces, lastMove);
 
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(true);
-    int y = 7;
+    int y = 3;
     int x = 4;
     int piece = board.getTileNumber(x, y);
     std::cout << std::endl;
