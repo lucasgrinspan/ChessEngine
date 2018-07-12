@@ -318,7 +318,20 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
         int tile = tileNumber + (modifier * 8);
         if (m_board[tile] == ' ') {
             if (m_blockMask[tile]) {
-                possibleMoves.push_back(tile);
+                //  Check for pawn promotion
+                int finalRow = color ? 1 : 6;
+                if (y == finalRow) {
+                    //  Pawn promotion:
+                    //  The tile number will have either 100, 200,
+                    //  300, or 400 added to it, signifying the
+                    //  four possible promotion pieces
+                    for (int i = 1; i <= 4; i++) {
+                        tile += 100;
+                        possibleMoves.push_back(tile);
+                    }
+                } else {
+                    possibleMoves.push_back(tile);
+                }
             }
             
             //  Check if the pawn is on the second row
@@ -1200,8 +1213,7 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
     //  Set up pieces information
     char pieceIcon = m_board[tileNum0];
     char targetIcon = m_board[tileNum1];
-    //  True if white
-    bool pieceColor = pieceIcon == std::tolower(pieceIcon);
+    bool pieceColor = isWhite(pieceIcon);
     
     if (pieceIcon != ' ') {
         Log("Found piece...");
@@ -1209,54 +1221,58 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
         Log("ERROR: no piece found at tile");
         return false;
     }
-
     
+    //  Check if the piece exists
+    std::array<std::vector<int>, 64> possibleMoves = getPossibleMoves(pieceColor);
+    std::vector<int> pieceMoves = possibleMoves[tileNum0];
+    for (int i = 0; i < pieceMoves.size(); i++) {
+        if (pieceMoves[i] == tileNum1) {
+            Log("Move found...");
+            break;
+        }
+        if (i == pieceMoves.size() - 1) {
+            Log("ERROR: no move found");
+            return false;
+        }
+    }
+    //  Check if castling
+    if (std::tolower(pieceIcon) == 'k' &&
+        std::abs(delx) == 2) {
+
+        Log("Castling...");
+        castling = true;
+    }
+    //  Check if capture
     if (targetIcon != ' ') {
         Log("Capturing piece...");
         capture = true;
     }
-    
-    bool straight = (delx == 0) || (dely == 0);
-    bool diagonal = std::abs(delx) == std::abs(dely);
-    bool knight = (!straight && !diagonal);
+    //  Check if en passant
+    if (std::tolower(pieceIcon) == 'p' &&
+        std::abs(delx) == 1 &&
+        targetIcon == ' ') {
 
-    if (straight && diagonal) {
-        Log("ERROR: bool straight and bool diagonal are both true");
-        return false;
+        Log("En passant...");
+        enPassant = true;
     }
-    //  Code for moving a piece in a straight line
-    if (straight) {
-        switch(std::tolower(pieceIcon)) {
-            case 'r': {
-                Log("Moving rook...");
-                bool horizontal = (dely == 0);
-                //  Find the length of the movement line
-                int lengthOfMovement = std::max(std::abs(delx), std::abs(dely));
-                for (int i = 1; i < lengthOfMovement; i++) {
-                    //  Find way to include negative
-                    if (m_board[tileNum0 + (i * (horizontal ? 1 : 8))] == ' ') {
-                        Log("ERROR: collision detected");
-                        return false;
-                    }
-                }
-                break; 
-            }      
-            case 'q': {
-                Log("Moving queen...");
-                break;
-            }
-            case 'k': {
-                Log("Moving king...");
-                break;
-            }
-            case 'n': {
-                Log("ERROR: attempting to move knight in a straight line");
-                return false;
-            }
-            case 'b': {
-                Log("ERROR: attempting to move bishop in a straight line");
-                return false;
-            }
-        }
+    //  Check if pawn promotion
+    int finalRow = pieceColor ? 1 : 6;
+    if (std::tolower(pieceIcon) == 'p' &&
+        y0 == finalRow) {
+        promotion = true;
     }
+
+    //  Make changes to board state
+    if (castling) {
+
+    } else if (capture) {
+
+    } else if (enPassant) {
+
+    } else if (promotion) {
+
+    } else {
+        
+    }
+    return true;
 }
