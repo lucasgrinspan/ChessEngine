@@ -19,9 +19,6 @@ Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::
     m_movedPiecesList = movedPieces;
     m_lastMove0 = std::stoi(lastMove.substr(0, 2));
     m_lastMove1 = std::stoi(lastMove.substr(2));
-    
-    //  White has first move
-    generateAttackedSquares(false);
 }
 int Board::getYCoord(int tileNumber) {
     return tileNumber / 8;
@@ -284,7 +281,7 @@ std::vector<int> Board::getKnightMoves(int tileNumber, bool color, bool influenc
                                        x - 2, y - 1, x - 2, y + 1, 
                                        x + 2, y - 1, x + 2, y + 1};
     //  Go through each possible move in the knight and check
-    for (int i = 0; i < knightOffsets.size(); i++) {
+    for (unsigned int i = 0; i < knightOffsets.size(); i++) {
         int x1 = knightOffsets[i];
         int y1 = knightOffsets[++i];
         if (withinBounds(x1, y1)) {
@@ -368,7 +365,6 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
     //  Check for en passant
     int enPassantRow = color ? 3 : 4;
     if (y == enPassantRow) {
-        char pawnIcon = color ? 'p' : 'P';
         int pawnStartRow = color ? 1 : 6;
 
         //  For en passant to apply, the last move must be a double push forward
@@ -546,7 +542,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
 
     //  Check for check against knight
     std::vector<int> knightMask = getKnightMoves(kingLocation, !color, INFLUENCE);
-    for (int i = 0; i < knightMask.size(); i++) {
+    for (unsigned int i = 0; i < knightMask.size(); i++) {
         if (m_board[knightMask[i]] == knightIcon) {
             checkLocations[arrayIndex++] = knightMask[i];
             //  It is not possible to be in check from two knights at the same time, 
@@ -557,7 +553,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
 
     //  Check for check against bishop/queen
     std::vector<int> diagonalMask = getDiagonalMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
-    for (int i = 0; i < diagonalMask.size(); i++) {
+    for (unsigned int i = 0; i < diagonalMask.size(); i++) {
         if (m_board[diagonalMask[i]] == bishopIcon) {
             checkLocations[arrayIndex++] = diagonalMask[i];
         } else if (m_board[diagonalMask[i]] == queenIcon) {
@@ -570,7 +566,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
 
     //  Check for check from rooks
     std::vector<int> straightMask = getStraightLineMoves(kingLocation, !color, MAX_RANGE, INFLUENCE);
-    for (int i = 0; i < straightMask.size(); i++) {
+    for (unsigned int i = 0; i < straightMask.size(); i++) {
         if (m_board[straightMask[i]] == rookIcon) {
             checkLocations[arrayIndex++] = straightMask[i];
             //  It is not possible to be in check more than once by a rook or horizontal queen,
@@ -587,7 +583,7 @@ std::array<int, 2> Board::getCheckLocations(bool color) {
 
     //  Check for check from pawns
     std::vector<int> pawnMask = getPawnMoves(kingLocation, color, INFLUENCE); 
-    for (int i = 0; i < pawnMask.size(); i++) {    
+    for (unsigned int i = 0; i < pawnMask.size(); i++) {    
         if (m_board[pawnMask[i]] == pawnIcon) {
             checkLocations[arrayIndex] = pawnMask[i];
             //  It is not possible to be in check more than once by a rook,
@@ -1023,7 +1019,7 @@ void Board::generateAttackedSquares(bool color) {
 
 
     //  Print attacking squares
-    // for (int i = 0; i < NUM_TILES; i++) {
+    // for (unsigned int i = 0; i < NUM_TILES; i++) {
     //     if (i % 8 == 0) {
     //         std::cout << std::endl;
     //     }
@@ -1095,9 +1091,12 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     m_blockMask.fill(true);
     m_captureMask.fill(true);
 
+    generateAttackedSquares(!color);
+
     //  Determine if king is in check
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
     bool check = isInCheck(kingPosition);
+
     //  Tracks the position of pieces checking the king
     std::array<int, 2> checkLocations;
 
@@ -1111,7 +1110,6 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
             //  Generate capture and block mask
             m_captureMask.fill(false);
             m_blockMask.fill(false);
-            
             int captureLocation = checkLocations[0];
             m_captureMask[captureLocation] = true;
 
@@ -1194,20 +1192,18 @@ std::array<std::vector<int>, 64> Board::getPossibleMoves(bool color) {
     }
     return possibleMoves;
 }
-bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
+bool Board::movePiece(int tileNum0, int tileNum1) {
     //  Set up special cases flags
     bool castling = false;
     bool enPassant = false;
-    bool promotion = promotionCase > 0;
+    bool promotion = false;
 
     //  Set up coordinates
     int y0 = getYCoord(tileNum0);
     int x0 = getXCoord(tileNum0);
-    int y1 = getYCoord(tileNum1);
     int x1 = getXCoord(tileNum1);
   
     int delx = x1 - x0;
-    int dely = y1 - y0;
 
     //  Set up pieces information
     char pieceIcon = m_board[tileNum0];
@@ -1224,7 +1220,7 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
     //  Check if the piece exists
     std::array<std::vector<int>, 64> possibleMoves = getPossibleMoves(pieceColor);
     std::vector<int> pieceMoves = possibleMoves[tileNum0];
-    for (int i = 0; i < pieceMoves.size(); i++) {
+    for (unsigned int i = 0; i < pieceMoves.size(); i++) {
         if (pieceMoves[i] == tileNum1) {
             Log("Move found...");
             break;
@@ -1286,7 +1282,7 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
         int promotionCase = tileNum1 / 100;
         //  Remove the encoding from the tileNum so that it returns to
         //  standard format
-        int tileNum1 = tileNum1 % 100;
+        tileNum1 = tileNum1 % 100;
 
         //  Place new piece
         char promotionPiece;
@@ -1302,6 +1298,9 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
                 break;
             case 4:
                 promotionPiece = 'N';
+            default:
+                Log("ERROR: invalid promotion");
+                return false;
         }
         if (pieceColor) {
             promotionPiece = std::tolower(promotionPiece);
@@ -1335,6 +1334,6 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
     } else if (tileNum0 == kingPositionBlack) {
         kingPositionBlack = tileNum1;
     }
-    
+
     return true;
 }

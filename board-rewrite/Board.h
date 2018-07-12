@@ -9,7 +9,7 @@ class Board {
         void printBoard();
         void printBitBoard(std::array<bool, 64> board);
 
-        bool movePiece(int tileNum0, int tileNum1, int promotionCase);
+        bool movePiece(int tileNum0, int tileNum1);
         std::array<std::vector<int>, 64> getPossibleMoves(bool color);
         
         int getYCoord(int tileNumber);
@@ -42,7 +42,7 @@ class Board {
         #define A8_ROOK_POS 0
         #define H8_ROOK_POS 7
 
-        int kingPositionWhite = 30;
+        int kingPositionWhite = 60;
         int kingPositionBlack = 4;
 
         std::array<char, 64> m_board;
