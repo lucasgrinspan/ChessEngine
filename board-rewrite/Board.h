@@ -35,6 +35,13 @@ class Board {
         const int A8_ROOK = 4;
         const int H8_ROOK = 5;
 
+        //  Consts used for starting piece positions
+        //  Must be known at compile time
+        #define A1_ROOK_POS 56
+        #define H1_ROOK_POS 63
+        #define A8_ROOK_POS 0
+        #define H8_ROOK_POS 7
+
         int kingPositionWhite = 30;
         int kingPositionBlack = 4;
 

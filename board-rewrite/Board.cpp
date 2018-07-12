@@ -1198,7 +1198,6 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
     //  Set up special cases flags
     bool castling = false;
     bool enPassant = false;
-    bool capture = false;
     bool promotion = promotionCase > 0;
 
     //  Set up coordinates
@@ -1242,11 +1241,6 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
         Log("Castling...");
         castling = true;
     }
-    //  Check if capture
-    if (targetIcon != ' ') {
-        Log("Capturing piece...");
-        capture = true;
-    }
     //  Check if en passant
     if (std::tolower(pieceIcon) == 'p' &&
         std::abs(delx) == 1 &&
@@ -1262,17 +1256,85 @@ bool Board::movePiece(int tileNum0, int tileNum1, int promotionCase) {
         promotion = true;
     }
 
-    //  Make changes to board state
+    //  Move the piece
+    m_board[tileNum0] = ' ';
+    m_board[tileNum1] = pieceIcon;
+
+    //  Make changes to board state depending on the case
     if (castling) {
-
-    } else if (capture) {
-
-    } else if (enPassant) {
-
-    } else if (promotion) {
-
-    } else {
+        //  Rook must be moved to the other side of the king
+        //  The target tile of the rook is the midpoint of the two
+        //  tiles in question
+        int rookTile = (tileNum0 + tileNum1) / 2;
+        m_board[rookTile] = pieceColor ? 'r' : 'R';
         
+        //  Find the rook that needs to be moved
+        if (pieceColor) {
+            int prevRookTile = delx > 0 ? H1_ROOK_POS : A1_ROOK_POS;
+            m_board[prevRookTile] = ' ';
+        } else {
+            int prevRookTile = delx > 0 ? H8_ROOK_POS : A8_ROOK_POS;
+            m_board[prevRookTile] = ' ';
+        }
+    } else if (enPassant) {
+        //  Find the pawn that was supposed to be captured
+        int modifier = pieceColor ? 8 : -8;
+        int targetTile = tileNum1 + modifier;
+        m_board[targetTile] = ' ';
+    } else if (promotion) {
+        //  The promotion case is encoded in the hundreds place
+        int promotionCase = tileNum1 / 100;
+        //  Remove the encoding from the tileNum so that it returns to
+        //  standard format
+        int tileNum1 = tileNum1 % 100;
+
+        //  Place new piece
+        char promotionPiece;
+        switch (promotionCase) {
+            case 1:
+                promotionPiece = 'Q';
+                break;
+            case 2:
+                promotionPiece = 'R';
+                break;
+            case 3:
+                promotionPiece = 'B';
+                break;
+            case 4:
+                promotionPiece = 'N';
+        }
+        if (pieceColor) {
+            promotionPiece = std::tolower(promotionPiece);
+        }
+        m_board[tileNum1] = promotionPiece;
     }
+    
+    //  Update moved pieces list
+    if (std::tolower(pieceIcon) == 'r') {
+        //  Check if rook was moved
+        switch (tileNum0) {
+            case A1_ROOK_POS:
+                m_movedPiecesList[A1_ROOK] = true;
+                break;
+            case H1_ROOK_POS:
+                m_movedPiecesList[H1_ROOK] = true;
+                break;
+            case A8_ROOK_POS:
+                m_movedPiecesList[A8_ROOK] = true;
+                break;
+            case H8_ROOK_POS:
+                m_movedPiecesList[H8_ROOK] = true;
+        }
+    }
+    //  Update last moves
+    m_lastMove0 = tileNum0;
+    m_lastMove1 = tileNum1;
+    //  Update king positions
+    if (tileNum0 == kingPositionWhite) {
+        kingPositionWhite = tileNum1;
+    } else if (tileNum0 == kingPositionBlack) {
+        kingPositionBlack = tileNum1;
+    }
+    
     return true;
 }
