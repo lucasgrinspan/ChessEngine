@@ -53,6 +53,8 @@ class Board {
         std::array<bool, 6> m_movedPiecesList;
         int m_lastMove0;
         int m_lastMove1;
+        int m_3FoldRepCounter = 0;
+        int m_50RepCounter = 0;
 
         bool isWhite(char piece);
         bool isOpponentPiece(char piece, bool color);

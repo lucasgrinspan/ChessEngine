@@ -1230,6 +1230,8 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
             return false;
         }
     }
+    //  Check if checkmate, draw, 3fold, 50fold
+    
     //  Check if castling
     if (std::tolower(pieceIcon) == 'k' &&
         std::abs(delx) == 2) {
