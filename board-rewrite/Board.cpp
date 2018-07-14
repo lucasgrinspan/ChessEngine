@@ -14,11 +14,14 @@
 #endif
 
 
-Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove) {
+Board::Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove, int repCounter) {
     m_board = pieces;
     m_movedPiecesList = movedPieces;
     m_lastMove0 = std::stoi(lastMove.substr(0, 2));
     m_lastMove1 = std::stoi(lastMove.substr(2));
+    m_50RepCounter = repCounter;
+
+    updateKingPositions();
 }
 int Board::getYCoord(int tileNumber) {
     return tileNumber / 8;
@@ -61,12 +64,26 @@ void Board::resetKing(bool color) {
     int kingPosition = color ? kingPositionWhite : kingPositionBlack;
     m_board[kingPosition] = kingPiece;
 }
+void Board::updateKingPositions() {
+    //  Happens automatically, except when undoing a move and initializing the board
+    for (int i = 0; i < NUM_TILES; i++) {
+        if (m_board[i] == 'K') {
+            kingPositionBlack = i;
+        } else if (m_board[i] == 'k') {
+            kingPositionWhite = i;
+        }
+    }
+}
 void Board::printBoard() {
     for (int i = 0; i < NUM_TILES; i++) {
         if (i % 8 == 0) {
             std::cout << std::endl;
         }
-        std::cout << m_board[i] << " ";
+        if (m_board[i] == ' ') {
+            std::cout << "□ ";
+        } else {
+            std::cout << m_board[i] << " ";
+        }
     }
     std::cout << std::endl;
 }
@@ -78,6 +95,13 @@ void Board::printBitBoard(std::array<bool, 64> board) {
         std::cout << board[i] << " ";
     }
     std::cout << std::endl;
+}
+void Board::undo() {
+    m_board = m_prevBoard;
+    m_movedPiecesList = m_prevMovedPiecesList;
+    m_lastMove0 = m_prevLastMove0;
+    m_lastMove1 = m_prevLastMove1;
+    updateKingPositions();
 }
 std::vector<int> Board::getStraightLineMoves(int tileNumber, bool color, int range, bool influence) {
 
@@ -349,7 +373,19 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
         int tile = tileNumber + (modifier * 8) - 1;
         if (isOpponentPiece(m_board[tile], color) || influence) {
             if (influence || checkMask(tile)) {
-                possibleMoves.push_back(tile);
+                int finalRow = color ? 1 : 6;
+                if (y == finalRow) {
+                    //  Pawn promotion:
+                    //  The tile number will have either 100, 200,
+                    //  300, or 400 added to it, signifying the
+                    //  four possible promotion pieces
+                    for (int i = 1; i <= 4; i++) {
+                        tile += 100;
+                        possibleMoves.push_back(tile);
+                    }
+                } else {
+                    possibleMoves.push_back(tile);
+                }
             }
         }
     }
@@ -358,7 +394,19 @@ std::vector<int> Board::getPawnMoves(int tileNumber, bool color, bool influence)
         int tile = tileNumber + (modifier * 8) + 1;
         if (isOpponentPiece(m_board[tile], color) || influence) {
             if (influence || checkMask(tile)) {
-                possibleMoves.push_back(tile);
+                int finalRow = color ? 1 : 6;
+                if (y == finalRow) {
+                    //  Pawn promotion:
+                    //  The tile number will have either 100, 200,
+                    //  300, or 400 added to it, signifying the
+                    //  four possible promotion pieces
+                    for (int i = 1; i <= 4; i++) {
+                        tile += 100;
+                        possibleMoves.push_back(tile);
+                    }
+                } else {
+                    possibleMoves.push_back(tile);
+                }
             }
         }
     }
@@ -485,7 +533,9 @@ std::vector<int> Board::getKingMoves(int tileNumber, bool color, bool influence)
     int kingIndex = color ? WHITE_KING : BLACK_KING;
     int leftRookIndex = color ? A1_ROOK : A8_ROOK;
     int rightRookIndex = color ? H1_ROOK : H8_ROOK;
-    if (!m_movedPiecesList[kingIndex]) {
+    //  The king can not castle out of check
+    if (!m_movedPiecesList[kingIndex] &&
+        !isInCheck(tileNumber)) {
         //  Check if the squares to both sides of the king are free
         //  On the left, there must be 3 free squares
         int counter = 1;
@@ -1197,6 +1247,7 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
     bool castling = false;
     bool enPassant = false;
     bool promotion = false;
+    bool capture = false;
 
     //  Set up coordinates
     int y0 = getYCoord(tileNum0);
@@ -1216,7 +1267,12 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
         Log("ERROR: no piece found at tile");
         return false;
     }
-    
+    //  Check if 50 moves have passed since last capture
+    if (m_50RepCounter == 50) {
+        Log("Draw: 50 moves since last capture");
+        return false;
+    }
+
     //  Check if the piece exists
     std::array<std::vector<int>, 64> possibleMoves = getPossibleMoves(pieceColor);
     std::vector<int> pieceMoves = possibleMoves[tileNum0];
@@ -1230,14 +1286,22 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
             return false;
         }
     }
-    //  Check if checkmate, draw, 3fold, 50fold
-    
+    //  Create backup of board
+    m_prevBoard = m_board;
+    m_prevMovedPiecesList = m_movedPiecesList;
+    m_prevLastMove0 = m_lastMove0;
+    m_prevLastMove1 = m_lastMove1;
+
     //  Check if castling
     if (std::tolower(pieceIcon) == 'k' &&
         std::abs(delx) == 2) {
 
         Log("Castling...");
         castling = true;
+    }
+    //  Check if capture 
+    if (targetIcon != ' ') {
+        capture = true;
     }
     //  Check if en passant
     if (std::tolower(pieceIcon) == 'p' &&
@@ -1246,6 +1310,7 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
 
         Log("En passant...");
         enPassant = true;
+        capture = true;
     }
     //  Check if pawn promotion
     int finalRow = pieceColor ? 1 : 6;
@@ -1336,6 +1401,15 @@ bool Board::movePiece(int tileNum0, int tileNum1) {
     } else if (tileNum0 == kingPositionBlack) {
         kingPositionBlack = tileNum1;
     }
+    //  Reset 50 rep draw counter if applicable
+    if (capture) {
+        m_50RepCounter = 1;
+    } else {
+        m_50RepCounter++;
+    }
+    //  TODO: Compare the new board to prev board to check 3 fold counter
+
+
 
     return true;
 }

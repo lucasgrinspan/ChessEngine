@@ -5,10 +5,11 @@
 #include<vector>
 class Board {
     public:
-        Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove);
+        Board(std::array<char, 64> pieces, std::array<bool, 6> movedPieces, std::string lastMove, int repCounter);
         void printBoard();
         void printBitBoard(std::array<bool, 64> board);
-
+        void undo();
+        
         bool movePiece(int tileNum0, int tileNum1);
         std::array<std::vector<int>, 64> getPossibleMoves(bool color);
         
@@ -46,15 +47,19 @@ class Board {
         int kingPositionBlack = 4;
 
         std::array<char, 64> m_board;
+        std::array<char, 64> m_prevBoard;
         std::array<bool, 64> m_attackedSquares;
         std::array<bool, 64> m_captureMask;
         std::array<bool, 64> m_blockMask;
         std::array<bool, 64> m_pinnedMask;
         std::array<bool, 6> m_movedPiecesList;
+        std::array<bool, 6> m_prevMovedPiecesList;
         int m_lastMove0;
         int m_lastMove1;
-        int m_3FoldRepCounter = 0;
-        int m_50RepCounter = 0;
+        int m_prevLastMove0;
+        int m_prevLastMove1;
+        int m_3FoldRepCounter = 1;
+        int m_50RepCounter = 1;
 
         bool isWhite(char piece);
         bool isOpponentPiece(char piece, bool color);
@@ -63,13 +68,13 @@ class Board {
         void generateBlockMask(bool color, int checkLocation);
         int calculatePin(bool color, int limit, int increment, int initialPos, char validPinner);
 
+        void updateKingPositions();
         void hideKing(bool color);
         void resetKing(bool color);
 
         bool checkMask(int tileNumber);
         bool isInCheck(int tileNumber);
 
-        //  TODO: remove range parameter from straight and diagonal 
         std::vector<int> getStraightLineMoves(int tileNumber, bool color, int length, bool influence);
         std::vector<int> getDiagonalMoves(int tileNumber, bool color, int length, bool influence);
         std::vector<int> getKnightMoves(int tileNumber, bool color, bool influence);

@@ -5,6 +5,42 @@
 #include<stdlib.h>
 #include<fstream>
 
+int getNumNodes(Board board, bool color, bool print) {
+    std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
+    int numNodes = 0;
+    for (int i = 0; i < 64; i++) {
+        numNodes += possibleMoves[i].size();
+    }
+    if (print) {
+        std::cout << "--------------------" << std::endl;
+        for (int i = 0; i < 64; i++) {
+            if (possibleMoves[i].size() > 0) {
+                std::cout << board.getYCoord(i) << board.getXCoord(i) << "--" << std::endl;
+                for (int tile : possibleMoves[i]) {
+                    std::cout << "  " << board.getYCoord(tile) << board.getXCoord(tile) << std::endl;
+                }
+            }
+        }
+    }
+    return numNodes;
+}
+int traverseNodes(Board board, bool color, int depth) {
+    int initialSum = getNumNodes(board, color, false);
+    std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
+    if (depth == 1) {
+        return initialSum;
+    }
+    for (int i = 0; i < 64; i++) {
+        if (possibleMoves[i].size() > 0) {
+            for (int tile : possibleMoves[i]) {
+                board.movePiece(i, tile);
+                initialSum += traverseNodes(board, !color, depth - 1);
+                board.undo();
+            }
+        }
+    }
+    return initialSum;
+}
 int main() {
     bool perft = true;
     bool randGen = false;
@@ -21,14 +57,14 @@ int main() {
     //White king, black king, a1 rook, h1 rook, a8 rook, h8 rook
     std::array<bool, 6> movedPieces {false, false, false, false, false, false};
     std::string lastMove = "0000";
-    Board board(pieces, movedPieces, lastMove);
+    Board board(pieces, movedPieces, lastMove, 1);
 
     //  Test by using perft testing
     if (perft) {
         //  Start with FEN string
-        std::string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w QqKk - 0 1";
-        std::array<char, 64> genPieces;
-        genPieces.fill(' ');
+        std::string FEN = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+        std::array<char, 64> fenPieces;
+        fenPieces.fill(' ');
         int boardCounter = 0;
         int fenCounter;
         for (unsigned int i = 0; i < FEN.size(); i++) {
@@ -41,24 +77,32 @@ int main() {
                 fenCounter = ++i;
                 break;
             } else if (std::islower(FEN.at(i))) {
-                genPieces[boardCounter] = std::toupper(FEN.at(i));
+                fenPieces[boardCounter] = std::toupper(FEN.at(i));
                 boardCounter++;
             } else {
-                genPieces[boardCounter] = std::tolower(FEN.at(i));
+                fenPieces[boardCounter] = std::tolower(FEN.at(i));
                 boardCounter++;
             }
         }
         //  Print board to check
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Board:" << std::endl;
         for (int i = 0; i < 64; i++) {
             if (i % 8 == 0) {
-                std::cout << std::endl;
+                std::cout << std::endl << "    ";
             }
-            std::cout << genPieces[i] << " ";
+            if (fenPieces[i] == ' ') {
+                std::cout << "□ ";
+            } else {
+                std::cout << fenPieces[i] << " ";
+            }
         }
         std::cout << std::endl;
 
         bool fenActiveColor = FEN.at(fenCounter) == 'w' ? true : false;
-        std::cout << fenActiveColor << std::endl;
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Active color: " << std::endl;
+        std::cout << "    " << fenActiveColor << std::endl;
 
         //  Generate the moved pieces list
         std::array<bool, 6> fenMovedPieces;
@@ -67,7 +111,7 @@ int main() {
         while (FEN.at(fenCounter) != ' ') {
             if (FEN.at(fenCounter) == '-') {
                 //  No castling possible, everything is true
-                fenCounter += 2;
+                fenCounter++;
                 break;
             }
             if (FEN.at(fenCounter) == 'K') {
@@ -86,6 +130,8 @@ int main() {
             fenCounter++;
         }
         //  Print moved pieces list
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Moved pieces:" << std::endl << "    ";
         for (bool result : fenMovedPieces) {
             std::cout << result;
         }
@@ -98,14 +144,14 @@ int main() {
             fenLastMove = "0000";
         } else {
             //  Convert algebraic notation to tile number notation
-            int column = FEN.at(fenCounter++) - '1';
-            int row = FEN.at(fenCounter++) - 'a';
+            int row = (FEN.at(fenCounter++) - 'a') + 1;
+            int column = (FEN.at(fenCounter++) - '1') + 1;
             fenCounter++;
             //  The rows are in reverse order
             row = (7 - row);
             
             //  The actual last move is the tile behind the tile number
-            int modifier = fenActiveColor ? 1 : -1;
+            int modifier = fenActiveColor ? -1 : 1;
             row = row + modifier;
 
             int row0 = row + (2 * modifier);
@@ -115,6 +161,8 @@ int main() {
 
             fenLastMove = std::to_string(tileNum0) + std::to_string(tileNum1);
         }
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Last move:" << std::endl << "    ";
         std::cout << fenLastMove << std::endl;
 
         //  Get the halfmove counter 
@@ -123,7 +171,16 @@ int main() {
         if (FEN.at(fenCounter) != ' ') {
             fenHalfMoveCounter.push_back(FEN.at(fenCounter));
         }
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Half move counter:" << std::endl << "    ";
         std::cout << fenHalfMoveCounter << std::endl;
+
+        Board fenBoard(fenPieces, fenMovedPieces, fenLastMove, std::stoi(fenHalfMoveCounter));
+
+        int count = traverseNodes(fenBoard, fenActiveColor, 3);
+        std::cout << "---------------------------" << std::endl;
+        std::cout << "Number of nodes:" << std::endl << "    ";
+        std::cout << count << std::endl;
     }
     //  Test by using randomly generated moves
     if (randGen) {    
