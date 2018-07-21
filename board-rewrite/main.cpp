@@ -24,6 +24,7 @@ int getNumNodes(Board board, bool color, bool print) {
     }
     return numNodes;
 }
+//  Returns total sum of the number of nodes
 int traverseNodes(Board board, bool color, int depth) {
     int initialSum = getNumNodes(board, color, false);
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
@@ -35,6 +36,24 @@ int traverseNodes(Board board, bool color, int depth) {
             for (int tile : possibleMoves[i]) {
                 board.movePiece(i, tile);
                 initialSum += traverseNodes(board, !color, depth - 1);
+                board.undo();
+            }
+        }
+    }
+    return initialSum;
+}
+//  Returns the amount of nodes only at the specified depth
+int traverseNodesAtDepth(Board board, bool color, int depth) {
+    int initialSum = 0;
+    if (depth == 1) {
+        return getNumNodes(board, color, false);
+    }
+    std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
+    for (int i = 0; i < 64; i++) {
+        if (possibleMoves[i].size() > 0) {
+            for (int tile : possibleMoves[i]) {
+                board.movePiece(i, tile);
+                initialSum += traverseNodesAtDepth(board, !color, depth - 1);
                 board.undo();
             }
         }
@@ -62,7 +81,7 @@ int main() {
     //  Test by using perft testing
     if (perft) {
         //  Start with FEN string
-        std::string FEN = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
+        std::string FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         std::array<char, 64> fenPieces;
         fenPieces.fill(' ');
         int boardCounter = 0;
@@ -177,7 +196,8 @@ int main() {
 
         Board fenBoard(fenPieces, fenMovedPieces, fenLastMove, std::stoi(fenHalfMoveCounter));
 
-        int count = traverseNodes(fenBoard, fenActiveColor, 3);
+        //int count = traverseNodes(fenBoard, fenActiveColor, 3);
+        int count = traverseNodesAtDepth(fenBoard, fenActiveColor, 4);
         std::cout << "---------------------------" << std::endl;
         std::cout << "Number of nodes:" << std::endl << "    ";
         std::cout << count << std::endl;

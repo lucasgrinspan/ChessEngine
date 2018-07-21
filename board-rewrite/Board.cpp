@@ -5,7 +5,7 @@
 #include<iostream>
 
 //  Change DIAGNOSTICS to 1 to include diagnostic messages
-#define DIAGNOSTICS 1
+#define DIAGNOSTICS 0
 
 #if DIAGNOSTICS
     #define Log(X) std::cout<<X<<std::endl
