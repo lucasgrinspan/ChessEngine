@@ -32,6 +32,9 @@ int Board::getXCoord(int tileNumber) {
 int Board::getTileNumber(int x, int y) {
     return (y * 8) + x;
 }
+char Board::pieceAt(int tileNumber) {
+    return m_board[tileNumber];
+}
 bool Board::isWhite(char piece) {
     //  Returns true if piece is white
     return std::islower(piece);

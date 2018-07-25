@@ -1,3 +1,5 @@
+.gitignore
+chess
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

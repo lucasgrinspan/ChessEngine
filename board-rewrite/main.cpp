@@ -4,8 +4,23 @@
 #include<iostream>
 #include<stdlib.h>
 #include<fstream>
+#include<map>
+#include<stdlib.h>
 
-int getNumNodes(Board board, bool color, bool print) {
+std::string convertToAlgebraic(char piece, int tileNumber) {
+    std::string algebraicNotation;
+    //  Pawn isn't added to notations
+    if (std::tolower(piece) != 'p') {
+        algebraicNotation.push_back(std::toupper(piece));
+    }
+    //  Convert the tile number
+    char column = 'a' + (tileNumber % 8);
+    char row = '0' + (8 - (tileNumber / 8));
+    algebraicNotation.push_back(column);
+    algebraicNotation.push_back(row);
+    return algebraicNotation;
+}
+int getNumNodes(Board board, bool color, bool print = false) {
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
     int numNodes = 0;
     for (int i = 0; i < 64; i++) {
@@ -26,7 +41,7 @@ int getNumNodes(Board board, bool color, bool print) {
 }
 //  Returns total sum of the number of nodes
 int traverseNodes(Board board, bool color, int depth) {
-    int initialSum = getNumNodes(board, color, false);
+    int initialSum = getNumNodes(board, color);
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
     if (depth == 1) {
         return initialSum;
@@ -43,17 +58,23 @@ int traverseNodes(Board board, bool color, int depth) {
     return initialSum;
 }
 //  Returns the amount of nodes only at the specified depth
-int traverseNodesAtDepth(Board board, bool color, int depth) {
+std::map<std::string, int> bulkSum;
+int traverseNodesAtDepth(Board board, bool color, int depth, int initialDepth) {
     int initialSum = 0;
     if (depth == 1) {
-        return getNumNodes(board, color, false);
+        return getNumNodes(board, color);
     }
     std::array<std::vector<int>, 64> possibleMoves = board.getPossibleMoves(color);
     for (int i = 0; i < 64; i++) {
         if (possibleMoves[i].size() > 0) {
             for (int tile : possibleMoves[i]) {
                 board.movePiece(i, tile);
-                initialSum += traverseNodesAtDepth(board, !color, depth - 1);
+                int newSum = traverseNodesAtDepth(board, !color, depth - 1, initialDepth);
+                initialSum += newSum;
+                if (depth == initialDepth) {
+                    std::string algebraicMove = convertToAlgebraic(board.pieceAt(i), tile);
+                    bulkSum[algebraicMove] += newSum;
+                }
                 board.undo();
             }
         }
@@ -197,10 +218,19 @@ int main() {
         Board fenBoard(fenPieces, fenMovedPieces, fenLastMove, std::stoi(fenHalfMoveCounter));
 
         //int count = traverseNodes(fenBoard, fenActiveColor, 3);
-        int count = traverseNodesAtDepth(fenBoard, fenActiveColor, 4);
+        int count = traverseNodesAtDepth(fenBoard, fenActiveColor, 4, 4);
         std::cout << "---------------------------" << std::endl;
         std::cout << "Number of nodes:" << std::endl << "    ";
         std::cout << count << std::endl;
+
+        //  Change to true to log the bulk sums of the moves to a file
+        if (true) {
+            system("touch bulk-sum.log");
+            for (auto& x : bulkSum) {
+                std::string fileLine = x.first + "," + std::to_string(x.second);
+                system(("echo '" + fileLine + "' >> bulk-sum.log").c_str());
+            }
+        }
     }
     //  Test by using randomly generated moves
     if (randGen) {    

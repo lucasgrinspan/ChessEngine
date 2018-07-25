@@ -35,7 +35,19 @@
         "array": "cpp",
         "iterator": "cpp",
         "cinttypes": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "*.tcc": "cpp",
+        "clocale": "cpp",
+        "unordered_map": "cpp",
+        "fstream": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "optional": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "string_view": "cpp",
+        "system_error": "cpp"
     },
     "clang.cxxflags": ["-std=c++11"],
     "python.linting.enabled": false

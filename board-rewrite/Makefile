@@ -13,4 +13,4 @@ Board.o: Board.cpp
 	g++ $(FLAGS) Board.cpp
 
 clean:
-	rm -rf *o chess  $$ rm -f move-log.txt
+	rm -rf *o chess && rm -f move-log.txt

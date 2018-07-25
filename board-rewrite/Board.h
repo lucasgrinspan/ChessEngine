@@ -16,6 +16,7 @@ class Board {
         int getYCoord(int tileNumber);
         int getXCoord(int tileNumber);
         int getTileNumber(int x, int y);
+        char pieceAt(int tileNumber);
     private:
         const int PIECE_ICON = 0;
         const int POSITION = 1;
